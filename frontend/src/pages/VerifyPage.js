@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, useParams, Link } from 'react-router-dom';
 import { FiSearch, FiCheckCircle, FiAlertTriangle, FiAlertCircle, FiInfo, FiShield, FiPackage, FiActivity } from 'react-icons/fi';
 import { api } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -20,6 +20,7 @@ const DetailRow = ({ label, value }) => value ? (
 ) : null;
 
 const VerifyPage = () => {
+  const { id: medicineId } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [results, setResults] = useState([]);
@@ -28,10 +29,30 @@ const VerifyPage = () => {
   const [detailLoading, setDetailLoading] = useState(false);
   const [searched, setSearched] = useState(false);
 
+  // Load medicine by ID if accessed via QR code
+  useEffect(() => {
+    if (medicineId) {
+      loadMedicineById(medicineId);
+    }
+  }, [medicineId]);
+
+  const loadMedicineById = async (id) => {
+    setDetailLoading(true);
+    try {
+      const { data } = await api.get(`/medicines/${id}`);
+      setSelected(data.data);
+      setSearched(true);
+    } catch (err) {
+      toast.error('Medicine not found');
+    } finally {
+      setDetailLoading(false);
+    }
+  };
+
   // Auto-search if query param exists
   useEffect(() => {
     const q = searchParams.get('q');
-    if (q) { setQuery(q); doSearch(q); }
+    if (q && !medicineId) { setQuery(q); doSearch(q); }
   }, []); // eslint-disable-line
 
   const doSearch = async (q) => {
