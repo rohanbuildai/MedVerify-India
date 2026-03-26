@@ -1,3 +1,6 @@
+// Seeding script to add 100 medicines to the database
+// Run this once to populate the database
+
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -6,6 +9,7 @@ const Medicine = require('../models/Medicine');
 const User = require('../models/User');
 const connectDB = require('../config/db');
 
+// Common Indian medicines data (100 medicines)
 const medicines = [
   // ============ ANTIBIOTICS ============
   {
@@ -2035,7 +2039,7 @@ const seedDB = async () => {
   try {
     await connectDB();
     
-    // Clear existing
+    // Clear existing medicines
     await Medicine.deleteMany({});
     console.log('🗑️  Cleared existing medicines');
 
@@ -2043,7 +2047,7 @@ const seedDB = async () => {
     const inserted = await Medicine.insertMany(medicines);
     console.log(`✅ Seeded ${inserted.length} medicines`);
 
-    // Create admin user
+    // Create admin user if doesn't exist
     const adminExists = await User.findOne({ email: 'admin@medverify.in' });
     if (!adminExists) {
       await User.create({
@@ -2066,4 +2070,10 @@ const seedDB = async () => {
   }
 };
 
-seedDB();
+// Export for use in other files
+module.exports = { medicines, seedDB };
+
+// Run if called directly
+if (require.main === module) {
+  seedDB();
+}
