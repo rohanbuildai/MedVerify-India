@@ -84,8 +84,9 @@ exports.getMedicine = async (req, res, next) => {
     // Increment verification count
     await Medicine.findByIdAndUpdate(medicine._id, { $inc: { verificationCount: 1 } });
 
-    // Generate QR URL
-    const qrData = `${process.env.CLIENT_URL}/verify/${medicine.medicineId}`;
+    // Generate QR URL - fallback to dynamic URL if CLIENT_URL not set
+    const baseUrl = process.env.CLIENT_URL || `${req.protocol}://${req.get('host')}`;
+    const qrData = `${baseUrl}/verify/${medicine.medicineId}`;
     const qrCode = await QRCode.toDataURL(qrData);
 
     res.status(200).json({
