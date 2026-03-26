@@ -1,0 +1,37 @@
+.dashboard__header {
+  background: white; border-bottom: 1px solid var(--slate-200);
+  padding: 32px 0;
+}
+.dashboard__header-inner {
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.dashboard__header h1 { font-size: 28px; margin-bottom: 4px; }
+.dashboard__header p { color: var(--slate-500); font-size: 15px; }
+.dashboard__body { padding: 28px 0 64px; }
+
+/* Stats */
+.dashboard__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.dash-stat {
+  background: white; border-radius: var(--radius-lg);
+  border: 1px solid var(--slate-200); padding: 18px 20px;
+  display: flex; align-items: center; gap: 14px;
+  box-shadow: var(--shadow-sm);
+}
+.dash-stat__icon { width: 44px; height: 44px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.dash-stat__val { font-family: var(--font-display); font-size: 24px; font-weight: 800; }
+.dash-stat__lbl { font-size: 12px; color: var(--slate-500); font-weight: 600; }
+
+/* Quick Actions */
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.quick-action {
+  background: white; border: 1.5px solid var(--slate-200);
+  border-radius: var(--radius-lg); padding: 20px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 10px; color: var(--slate-700); font-weight: 600; font-size: 14px;
+  transition: all var(--transition); text-align: center;
+}
+.quick-action:hover { border-color: var(--green-400); color: var(--green-700); background: var(--green-50); transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+.quick-action--red:hover { border-color: var(--red-400); color: var(--red-600); background: var(--red-50); }
+
+@media (max-width: 900px) { .dashboard__stats { grid-template-columns: 1fr 1fr; } .quick-actions { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .dashboard__stats { grid-template-columns: 1fr 1fr; } .quick-actions { grid-template-columns: 1fr 1fr; } .dashboard__header-inner { flex-direction: column; align-items: flex-start; } }
