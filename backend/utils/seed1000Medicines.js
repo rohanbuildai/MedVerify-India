@@ -36,8 +36,8 @@ const categories = [
   'Vitamin/Supplement', 'Vaccine', 'Contraceptive', 'Other'
 ];
 
-// Dosage forms
-const dosageForms = ['Tablet', 'Capsule', 'Syrup', 'Injection', 'Cream', 'Ointment', 'Drops', 'Inhaler', 'Patch', 'Suppository', 'Suspension', 'Gel', 'Solution'];
+// Dosage forms - only use valid forms from Medicine model
+const dosageForms = ['Tablet', 'Capsule', 'Syrup', 'Injection', 'Cream', 'Ointment', 'Drops', 'Inhaler', 'Patch', 'Suppository', 'Other'];
 
 // Common medicine compositions
 const compositions = {
@@ -235,14 +235,14 @@ const generateMedicines = () => {
     { name: 'Clotrimazole Cream', generic: 'Clotrimazole', brand: 'Clotrimazole', category: 'Antifungal', dosage: 'Cream', strength: '1%' },
     { name: 'Betamethasone Cream', generic: 'Betamethasone', brand: 'Betamethasone', category: 'Other', dosage: 'Cream', strength: '0.05%' },
     { name: 'Silver Sulfadiazine', generic: 'Silver Sulfadiazine', brand: 'Silvadene', category: 'Other', dosage: 'Cream', strength: '1%' },
-    { name: 'Diclofenac Gel', generic: 'Diclofenac', brand: 'Diclofenac Gel', category: 'Analgesic', dosage: 'Gel', strength: '1%' },
+    { name: 'Diclofenac Gel', generic: 'Diclofenac', brand: 'Diclofenac Gel', category: 'Analgesic', dosage: 'Cream', strength: '1%' },
     { name: 'Timolol Eye Drops', generic: 'Timolol', brand: 'Timolol', category: 'Other', dosage: 'Drops', strength: '0.5%' },
     { name: 'Ciprofloxacin Eye Drops', generic: 'Ciprofloxacin', brand: 'Ciprofloxacin', category: 'Antibiotic', dosage: 'Drops', strength: '0.3%' },
     { name: 'Prednisolone Eye Drops', generic: 'Prednisolone', brand: 'Prednisolone', category: 'Other', dosage: 'Drops', strength: '1%' },
     { name: 'Cataract Eye Drops', generic: 'Carboxymethylcellulose', brand: 'Refresh', category: 'Other', dosage: 'Drops', strength: '0.5%' },
     { name: 'ORS Packet', generic: 'ORS', brand: 'Electral', category: 'Other', dosage: 'Other', strength: '20.5g' },
     { name: 'ORS with Zinc', generic: 'ORS + Zinc', brand: 'Electral', category: 'Other', dosage: 'Other', strength: '20.5g+10mg' },
-    { name: 'Povidone Iodine', generic: 'Povidone Iodine', brand: 'Betadine', category: 'Other', dosage: 'Solution', strength: '5%' }
+    { name: 'Povidone Iodine', generic: 'Povidone Iodine', brand: 'Betadine', category: 'Other', dosage: 'Other', strength: '5%' }
   ];
 
   // Add common medicines first
@@ -362,16 +362,15 @@ function generatePackageSize(dosage) {
       const counts = [3, 5, 6, 7, 10, 14, 15, 20, 21, 28, 30, 50, 60, 100];
       return `${counts[Math.floor(Math.random() * counts.length)]} tablets/strip`;
     case 'Syrup':
-    case 'Solution':
-    case 'Suspension':
+    case 'Other':
       const ml = [30, 60, 100, 120, 150, 200, 250];
       return `${ml[Math.floor(Math.random() * ml.length)]}ml`;
     case 'Injection':
       return `${[1, 2, 5, 10][Math.floor(Math.random() * 4)]}ml vial`;
     case 'Cream':
     case 'Ointment':
-    case 'Gel':
-      return `${[5, 10, 15, 20, 30, 50][Math.floor(Math.random() * 6)]}g tube`;
+      const g = [5, 10, 15, 20, 30, 50][Math.floor(Math.random() * 6)];
+      return `${g}g tube`;
     case 'Drops':
       return `${[5, 10, 15][Math.floor(Math.random() * 3)]}ml`;
     case 'Inhaler':
@@ -404,13 +403,13 @@ function generatePhysicalFeatures(dosage) {
       coating: ['Film coated', 'Sugar coated', 'Enteric coated', 'Uncoated'][Math.floor(Math.random() * 4)]
     };
   }
-  if (['Cream', 'Ointment', 'Gel'].includes(dosage)) {
+  if (['Cream', 'Ointment'].includes(dosage)) {
     return {
       color: colors.slice(0, 6).join(', '),
       specialMarking: 'Tube'
     };
   }
-  if (['Syrup', 'Solution', 'Suspension', 'Drops'].includes(dosage)) {
+  if (['Syrup', 'Drops', 'Other'].includes(dosage)) {
     return {
       color: colors[Math.floor(Math.random() * colors.length)],
       specialMarking: 'Bottle'
