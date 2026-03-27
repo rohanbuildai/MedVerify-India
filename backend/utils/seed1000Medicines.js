@@ -33,9 +33,9 @@ const categories = [
   'Antibiotic', 'Antifungal', 'Antiviral', 'Analgesic', 'Antipyretic',
   'Antihypertensive', 'Antidiabetic', 'Antihistamine', 'Antacid',
   'Cardiovascular', 'Respiratory', 'Neurological', 'Oncology',
-  'Vitamin/Supplement', 'Vaccine', 'Contraceptive', 'Psychiatric',
-  'Gastrointestinal', 'Musculoskeletal', 'Dermatological', 'Ophthalmic',
-  'ENT', 'Hematological', 'Immunosuppressant', 'Hormonal', 'Other'
+  'Vitamin/Supplement', 'Vaccine', 'Contraceptive', 'Gastrointestinal',
+  'Musculoskeletal', 'Dermatological', 'Ophthalmic', 'ENT',
+  'Hematological', 'Immunosuppressant', 'Hormonal', 'Other'
 ];
 
 // Dosage forms
@@ -332,7 +332,7 @@ const generateMedicines = () => {
         colorDescription: 'Standard pharmaceutical packaging'
       },
       isVerified: true,
-      riskLevel: ['Antibiotic', 'Antiviral', 'Oncology', 'Psychiatric', 'Cardiovascular'].includes(category) ? 
+      riskLevel: ['Antibiotic', 'Antiviral', 'Oncology', 'Cardiovascular'].includes(category) ? 
                   ['low', 'medium', 'high'][Math.floor(Math.random() * 3)] : 
                   ['low', 'medium'][Math.floor(Math.random() * 2)],
       verificationCount: Math.floor(Math.random() * 500),
@@ -411,7 +411,7 @@ function generatePackageSize(dosage) {
 }
 
 function generateScheduleType(category) {
-  const scheduleH = ['Antibiotic', 'Antiviral', 'Oncology', 'Psychiatric', 'Cardiovascular', 'Neurological', 'Contraceptive'];
+  const scheduleH = ['Antibiotic', 'Antiviral', 'Oncology', 'Neurological', 'Contraceptive'];
   const scheduleH1 = ['Antihypertensive', 'Antidiabetic', 'Respiratory', 'Immunosuppressant', 'Musculoskeletal'];
   
   if (scheduleH.includes(category)) return 'H';
