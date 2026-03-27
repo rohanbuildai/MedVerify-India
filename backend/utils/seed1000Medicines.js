@@ -28,14 +28,12 @@ const companies = [
   'Organic Labs Pvt Ltd', 'Biochem Pharmaceutical Industries'
 ];
 
-// Categories
+// Categories - only use valid categories from Medicine model
 const categories = [
   'Antibiotic', 'Antifungal', 'Antiviral', 'Analgesic', 'Antipyretic',
   'Antihypertensive', 'Antidiabetic', 'Antihistamine', 'Antacid',
   'Cardiovascular', 'Respiratory', 'Neurological', 'Oncology',
-  'Vitamin/Supplement', 'Vaccine', 'Contraceptive', 'Gastrointestinal',
-  'Musculoskeletal', 'Dermatological', 'Ophthalmic', 'ENT',
-  'Hematological', 'Immunosuppressant', 'Hormonal', 'Other'
+  'Vitamin/Supplement', 'Vaccine', 'Contraceptive', 'Other'
 ];
 
 // Dosage forms
@@ -116,29 +114,9 @@ const compositions = {
     'Folic Acid', 'Zinc', 'Magnesium', 'Potassium Chloride', 'Multivitamins',
     'Omega-3 Fatty Acids', 'Coenzyme Q10', 'Biotin', 'Ascorbic Acid', 'Cholecalciferol'
   ],
-  'Gastrointestinal': [
-    'Omeprazole', 'Pantoprazole', 'Rabeprazole', 'Esomeprazole', 'Lansoprazole',
-    'Ranitidine', 'Famotidine', 'Cimetidine', 'Metoclopramide', 'Domperidone',
-    'Ondansetron', 'Granisetron', 'Palonosetron', 'Lactulose', 'Polyethylene Glycol',
-    'Sennosides', 'Bisacodyl', 'Ispaghula Husk', 'Rifaximin', 'Norfloxacin'
-  ],
-  'Musculoskeletal': [
-    'Ibuprofen', 'Naproxen', 'Diclofenac', 'Ketorolac', 'Mefenamic Acid',
-    'Piroxicam', 'Meloxicam', 'Celecoxib', 'Etoricoxib', 'Aceclofenac',
-    'Chlorzoxazone', 'Cyclobenzaprine', 'Tizanidine', 'Baclofen', 'Carisoprodol',
-    'Glucosamine', 'Chondroitin', 'Calcium Carbonate + Vitamin D3', 'Alendronate', 'Risedronate'
-  ],
-  'Dermatological': [
-    'Clindamycin', 'Mupirocin', 'Fusidic Acid', 'Silver Sulfadiazine', 'Betamethasone',
-    'Clobetasol', 'Hydrocortisone', 'Mometasone', 'Triamcinolone', 'Tacrolimus',
-    'Pimecrolimus', 'Salicylic Acid', 'Benzoyl Peroxide', 'Tretinoin', 'Adapalene',
-    'Clotrimazole', 'Terbinafine', 'Ketoconazole', 'Itraconazole', 'Fluconazole'
-  ],
-  'Ophthalmic': [
-    'Timolol', 'Bimatoprost', 'Latanoprost', 'Dorzolamide', 'Brinzolamide',
-    'Ciprofloxacin Eye Drops', 'Ofloxacin Eye Drops', 'Tobramycin Eye Drops',
-    'Gatifloxacin Eye Drops', 'Loteprednol', 'Fluorometholone', 'Prednisolone',
-    'Hydroxypropyl Methylcellulose', 'Carboxymethylcellulose', 'Polyethylene Glycol'
+  'Antifungal': [
+    'Clotrimazole', 'Terbinafine', 'Ketoconazole', 'Itraconazole', 'Fluconazole',
+    'Miconazole', 'Griseofulvin', 'Nystatin', 'Amphotericin B', 'Voriconazole'
   ],
   'Contraceptive': [
     'Levonorgestrel', 'Ethinyl Estradiol', 'Norethisterone', 'Desogestrel',
@@ -253,15 +231,15 @@ const generateMedicines = () => {
     { name: 'Mecobalamin 500', generic: 'Mecobalamin', brand: 'Mecobalamin', category: 'Vitamin/Supplement', dosage: 'Tablet', strength: '500mcg' },
     { name: 'Alpha Lipoic Acid 100', generic: 'Alpha Lipoic Acid', brand: 'ALA', category: 'Vitamin/Supplement', dosage: 'Capsule', strength: '100mg' },
     { name: 'Multivitamin', generic: 'Multivitamins', brand: 'Multivitamin', category: 'Vitamin/Supplement', dosage: 'Tablet', strength: 'N/A' },
-    { name: 'Mupirocin Cream', generic: 'Mupirocin', brand: 'Mupirocin', category: 'Dermatological', dosage: 'Cream', strength: '2%' },
-    { name: 'Clotrimazole Cream', generic: 'Clotrimazole', brand: 'Clotrimazole', category: 'Dermatological', dosage: 'Cream', strength: '1%' },
-    { name: 'Betamethasone Cream', generic: 'Betamethasone', brand: 'Betamethasone', category: 'Dermatological', dosage: 'Cream', strength: '0.05%' },
-    { name: 'Silver Sulfadiazine', generic: 'Silver Sulfadiazine', brand: 'Silvadene', category: 'Dermatological', dosage: 'Cream', strength: '1%' },
-    { name: 'Diclofenac Gel', generic: 'Diclofenac', brand: 'Diclofenac Gel', category: 'Dermatological', dosage: 'Gel', strength: '1%' },
-    { name: 'Timolol Eye Drops', generic: 'Timolol', brand: 'Timolol', category: 'Ophthalmic', dosage: 'Drops', strength: '0.5%' },
-    { name: 'Ciprofloxacin Eye Drops', generic: 'Ciprofloxacin', brand: 'Ciprofloxacin', category: 'Ophthalmic', dosage: 'Drops', strength: '0.3%' },
-    { name: 'Prednisolone Eye Drops', generic: 'Prednisolone', brand: 'Prednisolone', category: 'Ophthalmic', dosage: 'Drops', strength: '1%' },
-    { name: 'Cataract Eye Drops', generic: 'Carboxymethylcellulose', brand: 'Refresh', category: 'Ophthalmic', dosage: 'Drops', strength: '0.5%' },
+    { name: 'Mupirocin Cream', generic: 'Mupirocin', brand: 'Mupirocin', category: 'Other', dosage: 'Cream', strength: '2%' },
+    { name: 'Clotrimazole Cream', generic: 'Clotrimazole', brand: 'Clotrimazole', category: 'Antifungal', dosage: 'Cream', strength: '1%' },
+    { name: 'Betamethasone Cream', generic: 'Betamethasone', brand: 'Betamethasone', category: 'Other', dosage: 'Cream', strength: '0.05%' },
+    { name: 'Silver Sulfadiazine', generic: 'Silver Sulfadiazine', brand: 'Silvadene', category: 'Other', dosage: 'Cream', strength: '1%' },
+    { name: 'Diclofenac Gel', generic: 'Diclofenac', brand: 'Diclofenac Gel', category: 'Analgesic', dosage: 'Gel', strength: '1%' },
+    { name: 'Timolol Eye Drops', generic: 'Timolol', brand: 'Timolol', category: 'Other', dosage: 'Drops', strength: '0.5%' },
+    { name: 'Ciprofloxacin Eye Drops', generic: 'Ciprofloxacin', brand: 'Ciprofloxacin', category: 'Antibiotic', dosage: 'Drops', strength: '0.3%' },
+    { name: 'Prednisolone Eye Drops', generic: 'Prednisolone', brand: 'Prednisolone', category: 'Other', dosage: 'Drops', strength: '1%' },
+    { name: 'Cataract Eye Drops', generic: 'Carboxymethylcellulose', brand: 'Refresh', category: 'Other', dosage: 'Drops', strength: '0.5%' },
     { name: 'ORS Packet', generic: 'ORS', brand: 'Electral', category: 'Other', dosage: 'Other', strength: '20.5g' },
     { name: 'ORS with Zinc', generic: 'ORS + Zinc', brand: 'Electral', category: 'Other', dosage: 'Other', strength: '20.5g+10mg' },
     { name: 'Povidone Iodine', generic: 'Povidone Iodine', brand: 'Betadine', category: 'Other', dosage: 'Solution', strength: '5%' }
@@ -405,12 +383,12 @@ function generatePackageSize(dosage) {
 
 function generateScheduleType(category) {
   const scheduleH = ['Antibiotic', 'Antiviral', 'Oncology', 'Neurological', 'Contraceptive'];
-  const scheduleH1 = ['Antihypertensive', 'Antidiabetic', 'Respiratory', 'Immunosuppressant', 'Musculoskeletal'];
+  const scheduleH1 = ['Antihypertensive', 'Antidiabetic', 'Respiratory', 'Antifungal'];
   
   if (scheduleH.includes(category)) return 'H';
   if (scheduleH1.includes(category)) return 'H1';
   if (category === 'Vaccine') return 'X';
-  if (category === 'Vitamin/Supplement' || category === 'Antacid' || category === 'Other') return 'OTC';
+  if (category === 'Vitamin/Supplement' || category === 'Antacid' || category === 'Analgesic' || category === 'Other') return 'OTC';
   return 'Unknown';
 }
 
