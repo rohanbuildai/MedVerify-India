@@ -73,10 +73,6 @@ export const LoginPage = () => {
         <div className="auth-card__footer">
           Don't have an account? <Link to="/register">Register free</Link>
         </div>
-
-        <div className="auth-demo-box">
-          <p><strong>Demo Admin:</strong> admin@medverify.in / Admin@MedVerify2024</p>
-        </div>
       </div>
     </div>
   );
