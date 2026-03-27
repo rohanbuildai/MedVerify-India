@@ -7,6 +7,11 @@ import toast from 'react-hot-toast';
 import './AdminPage.css';
 
 const STATUS_OPTIONS = ['pending','under_review','verified','rejected','action_taken'];
+const STATUS_TABS = [
+  { value: '', label: 'All Reports' },
+  { value: 'pending', label: 'Pending' },
+  { value: 'action_taken', label: 'Fixed' }
+];
 
 const AdminPage = () => {
   const [stats, setStats] = useState(null);
@@ -133,17 +138,24 @@ const AdminPage = () => {
         <div className="card">
           <div className="card-header">
             <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 15, flex: 1 }}>All Reports</h3>
+              <h3 style={{ margin: 0, fontSize: 15, flex: 1 }}>Reports</h3>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {STATUS_TABS.map(tab => (
+                  <button
+                    key={tab.value}
+                    className={`btn btn-sm ${filters.status === tab.value ? 'btn-primary' : 'btn-ghost'}`}
+                    onClick={() => setFilters(f => ({ ...f, status: tab.value, page: 1 }))}
+                  >
+                    {tab.label}
+                  </button>
+                ))}
+              </div>
               <input
-                className="form-input" style={{ width: 200, fontSize: 13 }}
-                placeholder="Search medicine/ID..."
+                className="form-input" style={{ width: 180, fontSize: 13 }}
+                placeholder="Search medicine..."
                 value={filters.search}
                 onChange={e => setFilters(f => ({ ...f, search: e.target.value, page: 1 }))}
               />
-              <select className="form-select" style={{ width: 150, fontSize: 13 }} value={filters.status} onChange={e => setFilters(f => ({ ...f, status: e.target.value, page: 1 }))}>
-                <option value="">All Statuses</option>
-                {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
-              </select>
               <select className="form-select" style={{ width: 130, fontSize: 13 }} value={filters.priority} onChange={e => setFilters(f => ({ ...f, priority: e.target.value, page: 1 }))}>
                 <option value="">All Priority</option>
                 {['low','medium','high','urgent'].map(p => <option key={p} value={p}>{p}</option>)}
@@ -185,7 +197,7 @@ const AdminPage = () => {
                             onChange={e => handleStatusUpdate(r._id, e.target.value)}
                             disabled={updatingId === r._id}
                           >
-                            {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s.replace('_', ' ')}</option>)}
+                            {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s === 'action_taken' ? '✓ Fixed' : s.replace('_', ' ')}</option>)}
                           </select>
                         </td>
                         <td>
