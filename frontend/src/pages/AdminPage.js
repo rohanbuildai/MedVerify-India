@@ -1,25 +1,34 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiAlertTriangle, FiUsers, FiPackage, FiCheckCircle, FiClock, FiActivity, FiEdit } from 'react-icons/fi';
+import { FiAlertTriangle, FiUsers, FiPackage, FiCheckCircle, FiClock, FiActivity, FiPlus, FiCheck, FiX, FiMapPin, FiUser, FiAlertCircle } from 'react-icons/fi';
 import { api } from '../context/AuthContext';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import toast from 'react-hot-toast';
 import './AdminPage.css';
 
-const STATUS_OPTIONS = ['pending','under_review','verified','rejected','action_taken'];
-const STATUS_TABS = [
-  { value: '', label: 'All Reports' },
-  { value: 'pending', label: 'Pending' },
-  { value: 'action_taken', label: 'Fixed' }
+const CATEGORIES = [
+  'Antibiotic', 'Antifungal', 'Antiviral', 'Analgesic', 'Antipyretic',
+  'Antihypertensive', 'Antidiabetic', 'Antihistamine', 'Antacid',
+  'Cardiovascular', 'Respiratory', 'Neurological', 'Oncology',
+  'Vitamin/Supplement', 'Vaccine', 'Contraceptive', 'Other'
 ];
 
+const DOSAGE_FORMS = ['Tablet', 'Capsule', 'Syrup', 'Injection', 'Cream', 'Ointment', 'Drops', 'Inhaler', 'Patch', 'Suppository', 'Other'];
+
 const AdminPage = () => {
+  const [activeTab, setActiveTab] = useState('pending'); // pending, fixed, addMedicine
   const [stats, setStats] = useState(null);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [filters, setFilters] = useState({ status: '', priority: '', page: 1, search: '' });
-  const [totalPages, setTotalPages] = useState(1);
   const [updatingId, setUpdatingId] = useState(null);
+  
+  // Add Medicine Form
+  const [medicineForm, setMedicineForm] = useState({
+    name: '', generic: '', brand: '', category: 'Antibiotic', 
+    dosageForm: 'Tablet', strength: '', manufacturer: '',
+    composition: '', description: '', isVerified: true, riskLevel: 'low'
+  });
+  const [savingMedicine, setSavingMedicine] = useState(false);
 
   useEffect(() => {
     loadStats();
@@ -27,7 +36,7 @@ const AdminPage = () => {
 
   useEffect(() => {
     loadReports();
-  }, [filters]); // eslint-disable-line
+  }, [activeTab]); // eslint-disable-line
 
   const loadStats = async () => {
     try {
@@ -39,15 +48,12 @@ const AdminPage = () => {
   const loadReports = async () => {
     setLoading(true);
     try {
+      const status = activeTab === 'pending' ? 'pending' : activeTab === 'fixed' ? 'action_taken' : '';
       const params = new URLSearchParams();
-      if (filters.status) params.append('status', filters.status);
-      if (filters.priority) params.append('priority', filters.priority);
-      if (filters.search) params.append('search', filters.search);
-      params.append('page', filters.page);
-      params.append('limit', '15');
+      if (status) params.append('status', status);
+      params.append('limit', '50');
       const { data } = await api.get(`/reports?${params}`);
       setReports(data.data || []);
-      setTotalPages(data.pages || 1);
     } catch {}
     setLoading(false);
   };
@@ -55,8 +61,8 @@ const AdminPage = () => {
   const handleStatusUpdate = async (reportId, status) => {
     setUpdatingId(reportId);
     try {
-      await api.put(`/reports/${reportId}/status`, { status });
-      toast.success('Status updated');
+      await api.put(`/reports/${reportId}/status`, { status, reviewNotes: status === 'action_taken' ? 'Issue resolved - action taken' : '' });
+      toast.success(status === 'action_taken' ? 'Marked as Fixed!' : 'Status updated');
       loadReports();
       loadStats();
     } catch {
@@ -66,160 +72,454 @@ const AdminPage = () => {
     }
   };
 
+  const handleAddMedicine = async (e) => {
+    e.preventDefault();
+    setSavingMedicine(true);
+    try {
+      await api.post('/medicines', medicineForm);
+      toast.success('Medicine added successfully!');
+      setMedicineForm({
+        name: '', generic: '', brand: '', category: 'Antibiotic',
+        dosageForm: 'Tablet', strength: '', manufacturer: '',
+        composition: '', description: '', isVerified: true, riskLevel: 'low'
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to add medicine');
+    } finally {
+      setSavingMedicine(false);
+    }
+  };
+
   const priorityBadge = (p) => ({
     low: 'badge-slate', medium: 'badge-amber', high: 'badge-red', urgent: 'badge-red'
   }[p] || 'badge-slate');
 
+  const statusBadge = (s) => {
+    const map = {
+      pending: 'badge-amber',
+      under_review: 'badge-slate',
+      verified: 'badge-red',
+      rejected: 'badge-slate',
+      action_taken: 'badge-green'
+    };
+    return map[s] || 'badge-slate';
+  };
+
   return (
     <div className="admin-page page-enter">
-      <div className="admin-page__header">
+      {/* Header */}
+      <div className="admin-page__header" style={{ background: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)' }}>
         <div className="container">
-          <h1>Admin Panel</h1>
-          <p>Manage reports, medicines, and platform analytics</p>
+          <h1 style={{ color: '#fff' }}>🛡️ Admin Panel</h1>
+          <p style={{ color: '#94a3b8' }}>Manage reports, add medicines, and monitor platform</p>
         </div>
       </div>
 
       <div className="container admin-body">
-        {/* Stats */}
+        {/* Stats Cards */}
         {stats && (
-          <div className="admin-stats">
-            {[
-              { icon: <FiAlertTriangle />, val: stats.totalReports, lbl: 'Total Reports', color: '#ef4444', bg: '#fef2f2' },
-              { icon: <FiClock />, val: stats.pendingReports, lbl: 'Pending Review', color: '#f59e0b', bg: '#fffbeb' },
-              { icon: <FiCheckCircle />, val: stats.actionTakenReports, lbl: 'Actions Taken', color: '#16a34a', bg: '#f0fdf4' },
-              { icon: <FiPackage />, val: stats.flaggedMedicines, lbl: 'Flagged Medicines', color: '#f97316', bg: '#fff7ed' },
-              { icon: <FiUsers />, val: stats.totalUsers, lbl: 'Registered Users', color: '#3b82f6', bg: '#eff6ff' },
-              { icon: <FiActivity />, val: stats.totalVerifications, lbl: 'Verifications', color: '#8b5cf6', bg: '#f5f3ff' },
-            ].map((s, i) => (
-              <div key={i} className="admin-stat">
-                <div className="admin-stat__icon" style={{ background: s.bg, color: s.color }}>{s.icon}</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 24 }}>
+            <div style={{ background: '#fef2f2', border: '1px solid #fecaca', borderRadius: 12, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ background: '#fee2e2', padding: 10, borderRadius: 8 }}>
+                  <FiAlertTriangle size={20} color="#ef4444" />
+                </div>
                 <div>
-                  <div className="admin-stat__val">{s.val?.toLocaleString('en-IN')}</div>
-                  <div className="admin-stat__lbl">{s.lbl}</div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: '#1f2937' }}>{stats.pendingReports || 0}</div>
+                  <div style={{ fontSize: 13, color: '#6b7280' }}>Pending Reports</div>
                 </div>
               </div>
-            ))}
-          </div>
-        )}
-
-        {/* Chart */}
-        {stats?.reportsByDay?.length > 0 && (
-          <div className="card" style={{ marginBottom: 24 }}>
-            <div className="card-header"><h3 style={{ margin: 0, fontSize: 15 }}>Reports — Last 30 Days</h3></div>
-            <div className="card-body" style={{ paddingTop: 12 }}>
-              <ResponsiveContainer width="100%" height={200}>
-                <BarChart data={stats.reportsByDay}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                  <XAxis dataKey="_id" tick={{ fontSize: 11 }} tickFormatter={v => v.slice(5)} />
-                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                  <Tooltip labelFormatter={v => `Date: ${v}`} />
-                  <Bar dataKey="count" fill="#16a34a" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
             </div>
-          </div>
-        )}
-
-        {/* Top States */}
-        {stats?.topStates?.length > 0 && (
-          <div className="card" style={{ marginBottom: 24 }}>
-            <div className="card-header"><h3 style={{ margin: 0, fontSize: 15 }}>Top Reporting States</h3></div>
-            <div className="card-body" style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-              {stats.topStates.map((s, i) => (
-                <div key={i} style={{ background: 'var(--slate-50)', borderRadius: 8, padding: '8px 16px', fontSize: 13 }}>
-                  <strong>{s._id || 'Unknown'}</strong> — {s.count} reports
+            <div style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 12, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ background: '#dcfce7', padding: 10, borderRadius: 8 }}>
+                  <FiCheckCircle size={20} color="#16a34a" />
                 </div>
-              ))}
+                <div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: '#1f2937' }}>{stats.actionTakenReports || 0}</div>
+                  <div style={{ fontSize: 13, color: '#6b7280' }}>Fixed Reports</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ background: '#dbeafe', padding: 10, borderRadius: 8 }}>
+                  <FiPackage size={20} color="#3b82f6" />
+                </div>
+                <div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: '#1f2937' }}>{stats.totalMedicines || 0}</div>
+                  <div style={{ fontSize: 13, color: '#6b7280' }}>Medicines</div>
+                </div>
+              </div>
+            </div>
+            <div style={{ background: '#f5f3ff', border: '1px solid #ddd6fe', borderRadius: 12, padding: 20 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                <div style={{ background: '#ede9fe', padding: 10, borderRadius: 8 }}>
+                  <FiUsers size={20} color="#8b5cf6" />
+                </div>
+                <div>
+                  <div style={{ fontSize: 28, fontWeight: 700, color: '#1f2937' }}>{stats.totalUsers || 0}</div>
+                  <div style={{ fontSize: 13, color: '#6b7280' }}>Users</div>
+                </div>
+              </div>
             </div>
           </div>
         )}
 
-        {/* Filters + Reports Table */}
-        <div className="card">
-          <div className="card-header">
-            <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-              <h3 style={{ margin: 0, fontSize: 15, flex: 1 }}>Reports</h3>
-              <div style={{ display: 'flex', gap: 4 }}>
-                {STATUS_TABS.map(tab => (
-                  <button
-                    key={tab.value}
-                    className={`btn btn-sm ${filters.status === tab.value ? 'btn-primary' : 'btn-ghost'}`}
-                    onClick={() => setFilters(f => ({ ...f, status: tab.value, page: 1 }))}
-                  >
-                    {tab.label}
-                  </button>
+        {/* Tab Navigation */}
+        <div style={{ display: 'flex', gap: 8, marginBottom: 24, borderBottom: '2px solid #e5e7eb', paddingBottom: 12 }}>
+          <button
+            onClick={() => setActiveTab('pending')}
+            style={{
+              padding: '12px 24px',
+              borderRadius: 8,
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: activeTab === 'pending' ? '#ef4444' : '#f3f4f6',
+              color: activeTab === 'pending' ? '#fff' : '#374151'
+            }}
+          >
+            <FiAlertCircle size={18} />
+            Pending ({stats?.pendingReports || 0})
+          </button>
+          <button
+            onClick={() => setActiveTab('fixed')}
+            style={{
+              padding: '12px 24px',
+              borderRadius: 8,
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: activeTab === 'fixed' ? '#16a34a' : '#f3f4f6',
+              color: activeTab === 'fixed' ? '#fff' : '#374151'
+            }}
+          >
+            <FiCheckCircle size={18} />
+            Fixed
+          </button>
+          <button
+            onClick={() => setActiveTab('addMedicine')}
+            style={{
+              padding: '12px 24px',
+              borderRadius: 8,
+              border: 'none',
+              cursor: 'pointer',
+              fontWeight: 600,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              background: activeTab === 'addMedicine' ? '#3b82f6' : '#f3f4f6',
+              color: activeTab === 'addMedicine' ? '#fff' : '#374151'
+            }}
+          >
+            <FiPlus size={18} />
+            Add Medicine
+          </button>
+        </div>
+
+        {/* PENDING REPORTS TAB */}
+        {activeTab === 'pending' && (
+          <div>
+            <div style={{ background: '#fef3c7', border: '1px solid #fcd34d', borderRadius: 12, padding: 16, marginBottom: 20, display: 'flex', alignItems: 'center', gap: 12 }}>
+              <FiAlertTriangle size={24} color="#d97706" />
+              <div>
+                <strong style={{ color: '#92400e' }}>{reports.length} pending reports need attention</strong>
+                <p style={{ margin: '4px 0 0', fontSize: 13, color: '#b45309' }}>Review each report and mark as fixed when resolved</p>
+              </div>
+            </div>
+
+            {loading ? (
+              <div style={{ padding: 40, textAlign: 'center' }}><span className="spinner spinner-dark" style={{ width: 28, height: 28 }} /></div>
+            ) : reports.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: 60, background: '#f9fafb', borderRadius: 12 }}>
+                <FiCheckCircle size={48} color="#9ca3af" />
+                <h3 style={{ marginTop: 16, color: '#374151' }}>No pending reports!</h3>
+                <p style={{ color: '#6b7280' }}>All reports have been resolved</p>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+                {reports.map(report => (
+                  <div key={report._id} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 20, boxShadow: '0 1px 3px rgba(0,0,0,0.05)' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 16 }}>
+                      <div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span style={{ background: '#fee2e2', color: '#dc2626', padding: '4px 10px', borderRadius: 6, fontSize: 12, fontWeight: 600 }}>NEW</span>
+                          <h3 style={{ margin: 0, fontSize: 18 }}>{report.medicineName}</h3>
+                        </div>
+                        <p style={{ margin: '8px 0 0', color: '#6b7280', fontSize: 13 }}>ID: {report.reportId}</p>
+                      </div>
+                      <span className={`badge ${priorityBadge(report.priority)}`}>{report.priority}</span>
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16, marginBottom: 16 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <FiMapPin size={16} color="#6b7280" />
+                        <span style={{ fontSize: 13, color: '#374151' }}>
+                          {report.purchaseLocation?.city}, {report.purchaseLocation?.state}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <FiUser size={16} color="#6b7280" />
+                        <span style={{ fontSize: 13, color: '#374151' }}>
+                          {report.isAnonymous ? 'Anonymous' : report.reportedBy?.name || 'Unknown'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <FiClock size={16} color="#6b7280" />
+                        <span style={{ fontSize: 13, color: '#374151' }}>
+                          {new Date(report.createdAt).toLocaleDateString('en-IN')}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div style={{ background: '#fef2f2', borderRadius: 8, padding: 12, marginBottom: 16 }}>
+                      <strong style={{ color: '#991b1b' }}>Issue: </strong>
+                      <span style={{ color: '#7f1d1d' }}>{report.suspicionType?.replace(/_/g, ' ')}</span>
+                      <p style={{ margin: '8px 0 0', color: '#7f1d1d', fontSize: 13 }}>{report.description}</p>
+                    </div>
+
+                    <div style={{ display: 'flex', gap: 12 }}>
+                      <button
+                        onClick={() => handleStatusUpdate(report._id, 'action_taken')}
+                        disabled={updatingId === report._id}
+                        style={{
+                          flex: 1,
+                          padding: '12px 20px',
+                          background: '#16a34a',
+                          color: '#fff',
+                          border: 'none',
+                          borderRadius: 8,
+                          fontWeight: 600,
+                          cursor: 'pointer',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: 8,
+                          opacity: updatingId === report._id ? 0.7 : 1
+                        }}
+                      >
+                        <FiCheck size={18} />
+                        Mark as Fixed
+                      </button>
+                      <button
+                        onClick={() => handleStatusUpdate(report._id, 'rejected')}
+                        disabled={updatingId === report._id}
+                        style={{
+                          padding: '12px 20px',
+                          background: '#fff',
+                          color: '#6b7280',
+                          border: '1px solid #d1d5db',
+                          borderRadius: 8,
+                          fontWeight: 600,
+                          cursor: 'pointer'
+                        }}
+                      >
+                        <FiX size={18} />
+                        Reject
+                      </button>
+                    </div>
+                  </div>
                 ))}
               </div>
-              <input
-                className="form-input" style={{ width: 180, fontSize: 13 }}
-                placeholder="Search medicine..."
-                value={filters.search}
-                onChange={e => setFilters(f => ({ ...f, search: e.target.value, page: 1 }))}
-              />
-              <select className="form-select" style={{ width: 130, fontSize: 13 }} value={filters.priority} onChange={e => setFilters(f => ({ ...f, priority: e.target.value, page: 1 }))}>
-                <option value="">All Priority</option>
-                {['low','medium','high','urgent'].map(p => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
+            )}
           </div>
+        )}
 
-          {loading ? (
-            <div style={{ padding: 40, textAlign: 'center' }}><span className="spinner spinner-dark" style={{ width: 28, height: 28, margin: '0 auto' }} /></div>
-          ) : (
-            <>
-              <div className="table-wrapper">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>ID</th>
-                      <th>Medicine</th>
-                      <th>Reporter</th>
-                      <th>Location</th>
-                      <th>Priority</th>
-                      <th>Date</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {reports.map(r => (
-                      <tr key={r._id}>
-                        <td><code style={{ fontSize: 11 }}>{r.reportId}</code></td>
-                        <td><strong style={{ fontSize: 13 }}>{r.medicineName}</strong></td>
-                        <td style={{ fontSize: 13 }}>{r.isAnonymous ? 'Anonymous' : r.reportedBy?.name || '—'}</td>
-                        <td style={{ fontSize: 13 }}>{r.purchaseLocation?.city}, {r.purchaseLocation?.state}</td>
-                        <td><span className={`badge ${priorityBadge(r.priority)}`}>{r.priority}</span></td>
-                        <td style={{ fontSize: 12 }}>{new Date(r.createdAt).toLocaleDateString('en-IN')}</td>
-                        <td>
-                          <select
-                            className="form-select" style={{ fontSize: 12, padding: '4px 8px', width: 140 }}
-                            value={r.status}
-                            onChange={e => handleStatusUpdate(r._id, e.target.value)}
-                            disabled={updatingId === r._id}
-                          >
-                            {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s === 'action_taken' ? '✓ Fixed' : s.replace('_', ' ')}</option>)}
-                          </select>
-                        </td>
-                        <td>
-                          <Link to={`/admin/reports/${r._id}`} className="btn btn-ghost btn-sm">
-                            <FiEdit size={13} />
-                          </Link>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+        {/* FIXED REPORTS TAB */}
+        {activeTab === 'fixed' && (
+          <div>
+            {loading ? (
+              <div style={{ padding: 40, textAlign: 'center' }}><span className="spinner spinner-dark" style={{ width: 28, height: 28 }} /></div>
+            ) : reports.length === 0 ? (
+              <div style={{ textAlign: 'center', padding: 60, background: '#f9fafb', borderRadius: 12 }}>
+                <FiAlertTriangle size={48} color="#9ca3af" />
+                <h3 style={{ marginTop: 16, color: '#374151' }}>No fixed reports yet</h3>
+                <p style={{ color: '#6b7280' }}>Resolved reports will appear here</p>
               </div>
-              {totalPages > 1 && (
-                <div style={{ padding: 16, display: 'flex', justifyContent: 'center', gap: 8 }}>
-                  <button className="btn btn-outline btn-sm" onClick={() => setFilters(f => ({ ...f, page: Math.max(1, f.page - 1) }))} disabled={filters.page === 1}>Previous</button>
-                  <span style={{ padding: '7px 14px', fontSize: 13 }}>Page {filters.page} of {totalPages}</span>
-                  <button className="btn btn-outline btn-sm" onClick={() => setFilters(f => ({ ...f, page: Math.min(totalPages, f.page + 1) }))} disabled={filters.page === totalPages}>Next</button>
+            ) : (
+              <div style={{ display: 'grid', gap: 12 }}>
+                {reports.map(report => (
+                  <div key={report._id} style={{ background: '#f0fdf4', border: '1px solid #bbf7d0', borderRadius: 12, padding: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <FiCheckCircle size={18} color="#16a34a" />
+                        <strong style={{ color: '#166534' }}>{report.medicineName}</strong>
+                        <span style={{ background: '#dcfce7', color: '#166534', padding: '2px 8px', borderRadius: 4, fontSize: 11 }}>✓ Fixed</span>
+                      </div>
+                      <p style={{ margin: '4px 0 0 26px', fontSize: 12, color: '#15803d' }}>
+                        {report.purchaseLocation?.city}, {report.purchaseLocation?.state} • {new Date(report.updatedAt).toLocaleDateString('en-IN')}
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => handleStatusUpdate(report._id, 'pending')}
+                      style={{ padding: '6px 12px', background: '#fff', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 12, cursor: 'pointer' }}
+                    >
+                      Revert
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ADD MEDICINE TAB */}
+        {activeTab === 'addMedicine' && (
+          <div style={{ maxWidth: 700, margin: '0 auto' }}>
+            <div style={{ background: '#eff6ff', border: '1px solid #bfdbfe', borderRadius: 12, padding: 20, marginBottom: 24 }}>
+              <h3 style={{ margin: '0 0 8px', color: '#1e40af' }}>➕ Add New Medicine</h3>
+              <p style={{ margin: 0, color: '#1e3a8a', fontSize: 14 }}>Add medicines to the database so users can verify them</p>
+            </div>
+
+            <form onSubmit={handleAddMedicine} style={{ background: '#fff', border: '1px solid #e5e7eb', borderRadius: 12, padding: 24 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16 }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Medicine Name *</label>
+                  <input
+                    className="form-input"
+                    value={medicineForm.name}
+                    onChange={e => setMedicineForm(f => ({ ...f, name: e.target.value }))}
+                    placeholder="e.g., Crocin 500"
+                    required
+                  />
                 </div>
-              )}
-            </>
-          )}
-        </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Generic Name *</label>
+                  <input
+                    className="form-input"
+                    value={medicineForm.generic}
+                    onChange={e => setMedicineForm(f => ({ ...f, generic: e.target.value }))}
+                    placeholder="e.g., Paracetamol"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Brand</label>
+                  <input
+                    className="form-input"
+                    value={medicineForm.brand}
+                    onChange={e => setMedicineForm(f => ({ ...f, brand: e.target.value }))}
+                    placeholder="e.g., GSK"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Manufacturer</label>
+                  <input
+                    className="form-input"
+                    value={medicineForm.manufacturer}
+                    onChange={e => setMedicineForm(f => ({ ...f, manufacturer: e.target.value }))}
+                    placeholder="e.g., Abbott"
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Category *</label>
+                  <select
+                    className="form-select"
+                    value={medicineForm.category}
+                    onChange={e => setMedicineForm(f => ({ ...f, category: e.target.value }))}
+                    style={{ width: '100%' }}
+                  >
+                    {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Dosage Form *</label>
+                  <select
+                    className="form-select"
+                    value={medicineForm.dosageForm}
+                    onChange={e => setMedicineForm(f => ({ ...f, dosageForm: e.target.value }))}
+                    style={{ width: '100%' }}
+                  >
+                    {DOSAGE_FORMS.map(d => <option key={d} value={d}>{d}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Strength *</label>
+                  <input
+                    className="form-input"
+                    value={medicineForm.strength}
+                    onChange={e => setMedicineForm(f => ({ ...f, strength: e.target.value }))}
+                    placeholder="e.g., 500mg"
+                    required
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Risk Level</label>
+                  <select
+                    className="form-select"
+                    value={medicineForm.riskLevel}
+                    onChange={e => setMedicineForm(f => ({ ...f, riskLevel: e.target.value }))}
+                    style={{ width: '100%' }}
+                  >
+                    <option value="low">Low</option>
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                  </select>
+                </div>
+              </div>
+
+              <div style={{ marginTop: 16 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Composition</label>
+                <input
+                  className="form-input"
+                  value={medicineForm.composition}
+                  onChange={e => setMedicineForm(f => ({ ...f, composition: e.target.value }))}
+                  placeholder="e.g., Paracetamol 500mg"
+                />
+              </div>
+
+              <div style={{ marginTop: 16 }}>
+                <label style={{ display: 'block', fontSize: 13, fontWeight: 600, marginBottom: 6, color: '#374151' }}>Description</label>
+                <textarea
+                  className="form-input"
+                  value={medicineForm.description}
+                  onChange={e => setMedicineForm(f => ({ ...f, description: e.target.value }))}
+                  placeholder="Brief description of the medicine..."
+                  rows={3}
+                  style={{ width: '100%', resize: 'vertical' }}
+                />
+              </div>
+
+              <div style={{ marginTop: 24, display: 'flex', gap: 12 }}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={medicineForm.isVerified}
+                    onChange={e => setMedicineForm(f => ({ ...f, isVerified: e.target.checked }))}
+                  />
+                  <span style={{ fontSize: 14, fontWeight: 600, color: '#374151' }}>Mark as Verified</span>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={savingMedicine}
+                style={{
+                  width: '100%',
+                  marginTop: 24,
+                  padding: '14px 24px',
+                  background: '#3b82f6',
+                  color: '#fff',
+                  border: 'none',
+                  borderRadius: 8,
+                  fontSize: 16,
+                  fontWeight: 600,
+                  cursor: savingMedicine ? 'not-allowed' : 'pointer',
+                  opacity: savingMedicine ? 0.7 : 1
+                }}
+              >
+                {savingMedicine ? 'Adding Medicine...' : '➕ Add Medicine to Database'}
+              </button>
+            </form>
+          </div>
+        )}
       </div>
     </div>
   );
