@@ -10,6 +10,7 @@
     "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
     "build": "npm run build --prefix frontend",
     "seed": "node backend/utils/seedData.js",
+    "seed:1000": "node backend/utils/seed1000Medicines.js",
     "start": "npm start --prefix backend"
   },
   "devDependencies": {
