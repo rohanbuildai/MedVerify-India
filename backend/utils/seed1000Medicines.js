@@ -116,13 +116,6 @@ const compositions = {
     'Folic Acid', 'Zinc', 'Magnesium', 'Potassium Chloride', 'Multivitamins',
     'Omega-3 Fatty Acids', 'Coenzyme Q10', 'Biotin', 'Ascorbic Acid', 'Cholecalciferol'
   ],
-  'Psychiatric': [
-    'Sertraline', 'Fluoxetine', 'Paroxetine', 'Citalopram', 'Escitalopram',
-    'Venlafaxine', 'Duloxetine', 'Mirtazapine', 'Amitriptyline', 'Imipramine',
-    'Haloperidol', 'Risperidone', 'Olanzapine', 'Quetiapine', 'Aripiprazole',
-    'Clonazepam', 'Diazepam', 'Alprazolam', 'Lorazepam', 'Zolpidem',
-    'Zopiclone', 'Phenobarbital', 'Lithium', 'Valproate', 'Carbamazepine'
-  ],
   'Gastrointestinal': [
     'Omeprazole', 'Pantoprazole', 'Rabeprazole', 'Esomeprazole', 'Lansoprazole',
     'Ranitidine', 'Famotidine', 'Cimetidine', 'Metoclopramide', 'Domperidone',
@@ -235,13 +228,13 @@ const generateMedicines = () => {
     { name: 'Domperidone 10', generic: 'Domperidone', brand: 'Domperidone', category: 'Antacid', dosage: 'Tablet', strength: '10mg' },
     { name: 'Ondansetron 4', generic: 'Ondansetron', brand: 'Emeset', category: 'Antacid', dosage: 'Tablet', strength: '4mg' },
     { name: 'Pantoprazole 40', generic: 'Pantoprazole + Domperidone', brand: 'Pan-D', category: 'Antacid', dosage: 'Capsule', strength: '40mg/30mg' },
-    { name: 'Escitalopram 10', generic: 'Escitalopram', brand: 'Cited', category: 'Psychiatric', dosage: 'Tablet', strength: '10mg' },
-    { name: 'Sertraline 50', generic: 'Sertraline', brand: 'Sertraline', category: 'Psychiatric', dosage: 'Tablet', strength: '50mg' },
-    { name: 'Fluoxetine 20', generic: 'Fluoxetine', brand: 'Fluoxetine', category: 'Psychiatric', dosage: 'Capsule', strength: '20mg' },
-    { name: 'Duloxetine 20', generic: 'Duloxetine', brand: 'Duloxetine', category: 'Psychiatric', dosage: 'Capsule', strength: '20mg' },
-    { name: 'Alprazolam 0.25', generic: 'Alprazolam', brand: 'Alprazolam', category: 'Psychiatric', dosage: 'Tablet', strength: '0.25mg' },
-    { name: 'Alprazolam 0.5', generic: 'Alprazolam', brand: 'Alprazolam', category: 'Psychiatric', dosage: 'Tablet', strength: '0.5mg' },
-    { name: 'Clonazepam 0.5', generic: 'Clonazepam', brand: 'Clonazepam', category: 'Psychiatric', dosage: 'Tablet', strength: '0.5mg' },
+    { name: 'Escitalopram 10', generic: 'Escitalopram', brand: 'Cited', category: 'Neurological', dosage: 'Tablet', strength: '10mg' },
+    { name: 'Sertraline 50', generic: 'Sertraline', brand: 'Sertraline', category: 'Neurological', dosage: 'Tablet', strength: '50mg' },
+    { name: 'Fluoxetine 20', generic: 'Fluoxetine', brand: 'Fluoxetine', category: 'Neurological', dosage: 'Capsule', strength: '20mg' },
+    { name: 'Duloxetine 20', generic: 'Duloxetine', brand: 'Duloxetine', category: 'Neurological', dosage: 'Capsule', strength: '20mg' },
+    { name: 'Alprazolam 0.25', generic: 'Alprazolam', brand: 'Alprazolam', category: 'Neurological', dosage: 'Tablet', strength: '0.25mg' },
+    { name: 'Alprazolam 0.5', generic: 'Alprazolam', brand: 'Alprazolam', category: 'Neurological', dosage: 'Tablet', strength: '0.5mg' },
+    { name: 'Clonazepam 0.5', generic: 'Clonazepam', brand: 'Clonazepam', category: 'Neurological', dosage: 'Tablet', strength: '0.5mg' },
     { name: 'Gabapentin 300', generic: 'Gabapentin', brand: 'Gabapentin', category: 'Neurological', dosage: 'Capsule', strength: '300mg' },
     { name: 'Pregabalin 75', generic: 'Pregabalin', brand: 'Pregabalin', category: 'Neurological', dosage: 'Capsule', strength: '75mg' },
     { name: 'Carbamazepine 200', generic: 'Carbamazepine', brand: 'Carbamazepine', category: 'Neurological', dosage: 'Tablet', strength: '200mg' },
@@ -289,12 +282,12 @@ const generateMedicines = () => {
                   med.dosage === 'Injection' ? '1 vial' : 
                   med.dosage === 'Syrup' || med.dosage === 'Solution' ? `${Math.floor(Math.random() * 100) + 30}ml` : '1 unit',
       licenseNumber: `LIC/${id}/${new Date().getFullYear()}/IN`,
-      scheduleType: ['Antibiotic', 'Antiviral', 'Oncology', 'Psychiatric', 'Contraceptive'].includes(med.category) ? 'H' : 
+      scheduleType: ['Antibiotic', 'Antiviral', 'Oncology', 'Neurological', 'Contraceptive'].includes(med.category) ? 'H' : 
                     ['Antihypertensive', 'Antidiabetic', 'Cardiovascular', 'Neurological'].includes(med.category) ? 'H1' : 'OTC',
       physicalFeatures: generatePhysicalFeatures(med.dosage),
       packagingFeatures: { hologramPresent: Math.random() > 0.5, barcodePresent: true, colorDescription: 'Standard packaging' },
       isVerified: true,
-      riskLevel: ['Antibiotic', 'Antiviral', 'Oncology', 'Psychiatric'].includes(med.category) ? 'high' : 'medium'
+      riskLevel: ['Antibiotic', 'Antiviral', 'Oncology', 'Neurological'].includes(med.category) ? 'high' : 'medium'
     });
     id++;
   });
