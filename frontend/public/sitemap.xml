@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 <url><loc>https://medverify-india.com/</loc></url>
-<url><loc>https://www.medverify-india.com/</loc></url>
+<url><loc>https://medverify-india.com/verify</loc></url>
+<url><loc>https://medverify-india.com/flagged</loc></url>
+<url><loc>https://medverify-india.com/reports/public</loc></url>
+<url><loc>https://medverify-india.com/login</loc></url>
+<url><loc>https://medverify-india.com/register</loc></url>
 </urlset>
