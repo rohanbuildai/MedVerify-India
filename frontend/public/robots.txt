@@ -1,0 +1,17 @@
+# Robots.txt for MedVerify India
+# https://medverify.in
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://medverify.in/sitemap.xml
+
+# Disallow admin and private routes
+Disallow: /admin
+Disallow: /dashboard
+Disallow: /report
+Disallow: /profile
+
+# Crawl-delay (optional, for polite crawling)
+Crawl-delay: 1
