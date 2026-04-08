@@ -1,0 +1,100 @@
+/* Auth Pages */
+.auth-page {
+  min-height: calc(100vh - 72px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 48px 24px;
+  background: linear-gradient(135deg, var(--slate-50) 0%, var(--green-50) 100%);
+}
+
+.auth-card {
+  width: 100%; max-width: 440px;
+  background: var(--white);
+  border-radius: var(--radius-xl);
+  padding: 48px 40px;
+  box-shadow: var(--shadow-xl);
+  border: 1px solid var(--slate-100);
+}
+
+.auth-card--wide { max-width: 640px; }
+
+.auth-card__logo {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 32px;
+}
+
+.auth-logo-icon {
+  width: 44px; height: 44px; border-radius: 12px;
+  background: linear-gradient(135deg, var(--green-600), var(--green-800));
+  color: white; display: flex; align-items: center; justify-content: center;
+}
+
+.auth-logo-text {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: 18px;
+  background: linear-gradient(135deg, var(--green-700), var(--green-500));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+
+.auth-card__title {
+  font-size: 24px; font-weight: 800;
+  color: var(--slate-900); margin-bottom: 8px;
+}
+
+.auth-card__sub {
+  color: var(--slate-500); font-size: 14px; margin-bottom: 32px;
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 20px; }
+
+.form-grid-2 {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+}
+
+.input-icon-wrap {
+  position: relative; display: flex; align-items: center;
+}
+
+.input-icon {
+  position: absolute; left: 14px;
+  color: var(--slate-400); pointer-events: none; z-index: 1;
+}
+
+.input-with-icon { padding-left: 40px; }
+.input-with-right { padding-right: 40px; }
+
+.input-eye {
+  position: absolute; right: 12px;
+  background: none; border: none; color: var(--slate-400);
+  padding: 4px; display: flex; cursor: pointer;
+  transition: color var(--transition);
+}
+
+.input-eye:hover { color: var(--slate-600); }
+
+.auth-form__forgot {
+  text-align: right; margin-top: -8px;
+}
+
+.auth-form__forgot a {
+  font-size: 13px; font-weight: 600;
+  color: var(--green-700); transition: color var(--transition);
+}
+
+.auth-form__forgot a:hover { color: var(--green-800); }
+
+.auth-card__footer {
+  text-align: center; margin-top: 24px;
+  font-size: 14px; color: var(--slate-500);
+}
+
+.auth-card__footer a {
+  font-weight: 700; color: var(--green-700);
+  transition: color var(--transition);
+}
+
+.auth-card__footer a:hover { color: var(--green-800); }
+
+@media (max-width: 560px) {
+  .auth-card { padding: 32px 24px; }
+  .form-grid-2 { grid-template-columns: 1fr; }
+}

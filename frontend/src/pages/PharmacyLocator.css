@@ -1,0 +1,128 @@
+/* Pharmacy Locator */
+.pharmacy-locator-page { min-height: calc(100vh - 72px); }
+
+.locator-header {
+  background: radial-gradient(circle at 0% 0%, var(--green-950) 0%, var(--green-900) 100%);
+  color: white; padding: 48px 0;
+}
+
+.locator-header h1 {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: clamp(1.75rem, 3vw, 2.5rem);
+  margin-bottom: 8px; display: flex; align-items: center; gap: 12px;
+}
+
+.locator-header p { color: rgba(255, 255, 255, 0.7); font-size: 15px; margin-bottom: 24px; }
+
+.locator-search-bar {
+  display: flex; align-items: center; gap: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: var(--radius-lg); padding: 8px 12px 8px 16px;
+  max-width: 600px;
+}
+
+.locator-search-bar svg { color: rgba(255, 255, 255, 0.5); flex-shrink: 0; }
+
+.locator-search-bar input {
+  flex: 1; background: transparent; border: none; outline: none;
+  color: white; font-size: 14px; min-width: 0;
+}
+
+.locator-search-bar input::placeholder { color: rgba(255, 255, 255, 0.4); }
+
+.locator-content { padding: 32px 0 80px; }
+
+.locator-grid {
+  display: grid; grid-template-columns: 360px 1fr; gap: 24px;
+}
+
+/* Sidebar */
+.locator-sidebar {
+  background: var(--white); border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg); overflow: hidden;
+  max-height: calc(100vh - 200px);
+  display: flex; flex-direction: column;
+}
+
+.sidebar-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--slate-100);
+}
+
+.sidebar-header h3 {
+  font-size: 14px; font-weight: 700; color: var(--slate-700); margin: 0;
+}
+
+.btn-icon {
+  background: var(--slate-50); border: 1px solid var(--slate-200);
+  width: 36px; height: 36px; border-radius: var(--radius-md);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--slate-600); cursor: pointer; transition: all var(--transition);
+}
+
+.btn-icon:hover { background: var(--green-50); color: var(--green-700); border-color: var(--green-200); }
+
+.pharmacy-list { overflow-y: auto; flex: 1; }
+
+.pharmacy-card {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--slate-100);
+  cursor: pointer; transition: all var(--transition);
+}
+
+.pharmacy-card:hover { background: var(--slate-50); }
+.pharmacy-card.active { background: var(--green-50); border-left: 3px solid var(--green-600); }
+
+.pharma-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.pharma-name { font-size: 14px; font-weight: 700; color: var(--slate-900); }
+.verified-icon { color: var(--green-600); }
+
+.pharma-address { font-size: 12px; color: var(--slate-500); margin-bottom: 8px; }
+
+.pharma-meta {
+  display: flex; align-items: center; gap: 12px;
+}
+
+.status-badge {
+  font-size: 11px; font-weight: 700; padding: 2px 8px;
+  border-radius: var(--radius-full); text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.status-badge.open { background: var(--green-100); color: var(--green-800); }
+.status-badge.closed { background: var(--slate-200); color: var(--slate-600); }
+
+.pharma-phone {
+  font-size: 12px; color: var(--slate-400);
+  display: flex; align-items: center; gap: 4px;
+}
+
+/* Map Container */
+.locator-map-container {
+  border-radius: var(--radius-lg); overflow: hidden;
+  border: 1px solid var(--slate-200);
+  box-shadow: var(--shadow-md);
+}
+
+/* Leaflet overrides */
+.custom-marker { background: none !important; border: none !important; }
+.leaflet-popup-content-wrapper { border-radius: 12px !important; box-shadow: var(--shadow-lg) !important; }
+
+.map-info-window h4 { font-size: 14px; margin-bottom: 4px; }
+.map-info-window p { font-size: 12px; color: var(--slate-500); margin-bottom: 8px; }
+
+.btn-xs { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
+
+@media (max-width: 1024px) {
+  .locator-grid { grid-template-columns: 1fr; }
+  .locator-sidebar { max-height: 320px; }
+}
+
+@media (max-width: 768px) {
+  .locator-header { padding: 32px 0; }
+}

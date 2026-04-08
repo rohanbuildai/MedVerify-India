@@ -1,0 +1,70 @@
+/* Admin Page */
+.admin-page__header {
+  padding: 48px 0 40px;
+  color: white;
+}
+
+.admin-page__header h1 {
+  font-family: var(--font-display);
+  font-weight: 800; font-size: clamp(1.75rem, 3vw, 2.5rem);
+  margin-bottom: 8px; letter-spacing: -0.02em;
+}
+
+.admin-page__header p { font-size: 15px; }
+
+.admin-body { padding: 32px 0 100px; }
+
+/* Admin Tab Buttons */
+.admin-tabs {
+  display: flex; gap: 8px; margin-bottom: 24px;
+  border-bottom: 2px solid var(--slate-200); padding-bottom: 12px;
+}
+
+.admin-tab {
+  padding: 12px 24px; border-radius: var(--radius-md);
+  border: none; cursor: pointer; font-weight: 600;
+  display: flex; align-items: center; gap: 8px;
+  font-size: 14px; transition: all var(--transition);
+}
+
+/* Report Cards in Admin */
+.admin-report-card {
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  padding: 20px; box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.2s ease;
+}
+
+.admin-report-card:hover { box-shadow: var(--shadow-md); }
+
+/* Add Medicine Form */
+.admin-form-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 20px;
+}
+
+/* Chart Container */
+.admin-chart-wrap {
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-lg);
+  padding: 24px; box-shadow: var(--shadow-sm);
+}
+
+/* Flagged Medicines DB List in Admin */
+.admin-flagged-list {
+  display: flex; flex-direction: column; gap: 12px;
+}
+
+.admin-flagged-card {
+  background: var(--white);
+  border: 1px solid var(--slate-200);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+
+@media (max-width: 768px) {
+  .admin-page__header { padding: 32px 0; }
+  .admin-form-grid { grid-template-columns: 1fr; }
+}
