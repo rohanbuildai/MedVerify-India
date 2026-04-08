@@ -3,6 +3,25 @@ const User = require('../models/User');
 const { AppError } = require('../middleware/errorHandler');
 const sendEmail = require('../utils/sendEmail');
 
+/**
+ * Normalizes email address
+ * - Trims and lowercases
+ * - Drops dots for GMAIL accounts (j.ohn.doe@gmail.com -> johndoe@gmail.com)
+ *   as Gmail ignores dots in the local part.
+ */
+const normalizeEmail = (email) => {
+  if (!email) return null;
+  let normalized = email.trim().toLowerCase();
+
+  // Gmail dot normalization
+  if (normalized.endsWith('@gmail.com')) {
+    const [local, domain] = normalized.split('@');
+    normalized = `${local.replace(/\./g, '')}@${domain}`;
+  }
+
+  return normalized;
+};
+
 // Helper: Send token response
 const sendTokenResponse = (user, statusCode, res) => {
   const token = user.getSignedJwtToken();
@@ -39,7 +58,8 @@ const sendTokenResponse = (user, statusCode, res) => {
 // @access  Public
 exports.register = async (req, res, next) => {
   try {
-    const { name, email, password, phone, state, city, role, adminKey } = req.body;
+    const { name, password, phone, state, city, role, adminKey } = req.body;
+    const email = normalizeEmail(req.body.email);
 
     // Check for admin registration
     if (role === 'admin' && adminKey !== process.env.ADMIN_SECRET_KEY) {
@@ -100,7 +120,8 @@ exports.register = async (req, res, next) => {
 // @access  Public
 exports.login = async (req, res, next) => {
   try {
-    const { email, password } = req.body;
+    const email = normalizeEmail(req.body.email);
+    const { password } = req.body;
 
     if (!email || !password) {
       return next(new AppError('Please provide email and password', 400));
@@ -169,7 +190,8 @@ exports.getMe = async (req, res, next) => {
 // @access  Public
 exports.forgotPassword = async (req, res, next) => {
   try {
-    const user = await User.findOne({ email: req.body.email });
+    const email = normalizeEmail(req.body.email);
+    const user = await User.findOne({ email });
     if (!user) {
       return next(new AppError('No user found with that email', 404));
     }

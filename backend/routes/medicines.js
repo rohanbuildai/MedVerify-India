@@ -4,6 +4,8 @@ const {
   searchMedicines, getMedicine, getAllMedicines,
   addMedicine, updateMedicine, getFlaggedMedicines, getMedicineStats
 } = require('../controllers/medicineController');
+const { aiAnalyze } = require('../controllers/aiController');
+const { cdscoLookup } = require('../controllers/cdscoController');
 const { protect, authorize, optionalAuth } = require('../middleware/auth');
 
 // Public routes
@@ -11,6 +13,8 @@ router.get('/search', searchMedicines);
 router.get('/flagged', getFlaggedMedicines);
 router.get('/stats', getMedicineStats);
 router.get('/', getAllMedicines);
+router.post('/ai-analyze', aiAnalyze);
+router.get('/cdsco-lookup/:batchNumber', cdscoLookup);
 router.get('/:id', optionalAuth, getMedicine);
 
 // Protected routes (admin/pharmacist)

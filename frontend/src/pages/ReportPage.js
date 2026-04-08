@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate, useSearchParams, Link } from 'react-router-dom';
-import { FiAlertTriangle, FiUpload, FiX, FiCheckCircle } from 'react-icons/fi';
+import { useSearchParams, Link } from 'react-router-dom';
+import { FiAlertTriangle, FiUpload, FiX, FiCheckCircle, FiNavigation, FiShield } from 'react-icons/fi';
 import { api } from '../context/AuthContext';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -30,7 +30,6 @@ const SUSPICION_TYPES = [
 
 const ReportPage = () => {
   const { user } = useAuth();
-  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const [form, setForm] = useState({
@@ -50,8 +49,45 @@ const ReportPage = () => {
   const [images, setImages] = useState([]);
   const [previews, setPreviews] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [locLoading, setLocLoading] = useState(false);
   const [submitted, setSubmitted] = useState(null);
   const [errors, setErrors] = useState({});
+  const [coords, setCoords] = useState(null);
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) return toast.error('Geolocation not supported');
+    setLocLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        setCoords({ lat: latitude, lng: longitude });
+        
+        // Use Reverse Geocoding if API key exists, else just set coords
+        try {
+          const response = await fetch(`https://api.geoapify.com/v1/geocode/reverse?lat=${latitude}&lon=${longitude}&format=json&apiKey=${process.env.REACT_APP_GEOAPIFY_API_KEY}`);
+          const data = await response.json();
+          if (data.results && data.results[0]) {
+            const result = data.results[0];
+            const city = result.city || '';
+            const state = result.state || '';
+            const pincode = result.postcode || '';
+            
+            setForm(f => ({ ...f, city, state, pincode, address: result.formatted }));
+            toast.success('Location detected!');
+          }
+        } catch (err) {
+          console.error('Reverse geocoding failed', err);
+          toast.success('Coordinates captured!');
+        } finally {
+          setLocLoading(false);
+        }
+      },
+      (err) => {
+        toast.error('Location permission denied');
+        setLocLoading(false);
+      }
+    );
+  };
 
   if (!user) {
     return (
@@ -118,6 +154,10 @@ const ReportPage = () => {
       formData.append('purchaseLocation[city]', form.city);
       formData.append('purchaseLocation[state]', form.state);
       formData.append('purchaseLocation[pincode]', form.pincode);
+      if (coords) {
+        formData.append('purchaseLocation[coordinates][lat]', coords.lat);
+        formData.append('purchaseLocation[coordinates][lng]', coords.lng);
+      }
       images.forEach(img => formData.append('images', img));
 
       const { data } = await api.post('/reports', formData, {
@@ -175,8 +215,11 @@ const ReportPage = () => {
     <div className="report-page page-enter">
       <div className="report-page__header">
         <div className="container-sm">
-          <h1><FiAlertTriangle size={28} /> Report Suspicious Medicine</h1>
-          <p>Your report helps protect others. All reports are reviewed by our team and forwarded to CDSCO.</p>
+          <div className="hero__badge">
+            <FiShield size={13} /> Secure Incident Reporting
+          </div>
+          <h1>Submit Vigilance Report</h1>
+          <p>Your contribution is critical to pharmaceutical safety. Every report is encrypted and analyzed by professionals before forwarding to CDSCO.</p>
         </div>
       </div>
 
@@ -188,11 +231,11 @@ const ReportPage = () => {
           </div>
         </div>
 
-        <form onSubmit={handleSubmit} className="report-form card">
-          <div className="card-header">
-            <h3 style={{ margin: 0, fontSize: 16 }}>Medicine Information</h3>
+        <form onSubmit={handleSubmit} className="report-form card-clinical">
+          <div className="card-header" style={{ padding: '24px 32px' }}>
+            <h3 style={{ margin: 0, fontSize: 18, fontFamily: 'var(--font-display)', fontWeight: 800 }}>Clinical Information</h3>
           </div>
-          <div className="card-body">
+          <div className="card-body" style={{ padding: '32px' }}>
             <div className="form-grid">
               <div className="form-group">
                 <label className="form-label">Medicine Name *</label>
@@ -237,8 +280,11 @@ const ReportPage = () => {
             </div>
           </div>
 
-          <div className="card-header" style={{ borderTop: '1px solid var(--slate-100)' }}>
+          <div className="card-header" style={{ borderTop: '1px solid var(--slate-100)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <h3 style={{ margin: 0, fontSize: 16 }}>Purchase Location</h3>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={detectLocation} disabled={locLoading}>
+              <FiNavigation size={14} /> {locLoading ? 'Detecting...' : 'Autodetect Location'}
+            </button>
           </div>
           <div className="card-body">
             <div className="form-grid">

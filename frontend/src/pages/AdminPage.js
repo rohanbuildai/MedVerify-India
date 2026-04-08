@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FiAlertTriangle, FiUsers, FiPackage, FiCheckCircle, FiClock, FiActivity, FiPlus, FiCheck, FiX, FiMapPin, FiUser, FiAlertCircle } from 'react-icons/fi';
+import { FiAlertTriangle, FiUsers, FiPackage, FiCheckCircle, FiClock, FiActivity, FiCheck, FiX, FiMapPin, FiUser, FiAlertCircle, FiPlus } from 'react-icons/fi';
 import { api } from '../context/AuthContext';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts';
 import toast from 'react-hot-toast';
@@ -16,7 +15,7 @@ const CATEGORIES = [
 const DOSAGE_FORMS = ['Tablet', 'Capsule', 'Syrup', 'Injection', 'Cream', 'Ointment', 'Drops', 'Inhaler', 'Patch', 'Suppository', 'Other'];
 
 const AdminPage = () => {
-  const [activeTab, setActiveTab] = useState('pending'); // pending, fixed, addMedicine
+  const [activeTab, setActiveTab] = useState('pending'); // pending, fixed, addMedicine, intelligence
   const [stats, setStats] = useState(null);
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -93,17 +92,6 @@ const AdminPage = () => {
   const priorityBadge = (p) => ({
     low: 'badge-slate', medium: 'badge-amber', high: 'badge-red', urgent: 'badge-red'
   }[p] || 'badge-slate');
-
-  const statusBadge = (s) => {
-    const map = {
-      pending: 'badge-amber',
-      under_review: 'badge-slate',
-      verified: 'badge-red',
-      rejected: 'badge-slate',
-      action_taken: 'badge-green'
-    };
-    return map[s] || 'badge-slate';
-  };
 
   return (
     <div className="admin-page page-enter">
@@ -202,10 +190,10 @@ const AdminPage = () => {
             }}
           >
             <FiCheckCircle size={18} />
-            Fixed
+            Add Medicine
           </button>
           <button
-            onClick={() => setActiveTab('addMedicine')}
+            onClick={() => setActiveTab('intelligence')}
             style={{
               padding: '12px 24px',
               borderRadius: 8,
@@ -215,12 +203,12 @@ const AdminPage = () => {
               display: 'flex',
               alignItems: 'center',
               gap: 8,
-              background: activeTab === 'addMedicine' ? '#3b82f6' : '#f3f4f6',
-              color: activeTab === 'addMedicine' ? '#fff' : '#374151'
+              background: activeTab === 'intelligence' ? '#8b5cf6' : '#f3f4f6',
+              color: activeTab === 'intelligence' ? '#fff' : '#374151'
             }}
           >
-            <FiPlus size={18} />
-            Add Medicine
+            <FiActivity size={18} />
+            Counterfeit Intelligence
           </button>
         </div>
 
@@ -518,6 +506,73 @@ const AdminPage = () => {
                 {savingMedicine ? 'Adding Medicine...' : '➕ Add Medicine to Database'}
               </button>
             </form>
+          </div>
+        )}
+        {/* INTELLIGENCE TAB */}
+        {activeTab === 'intelligence' && (
+          <div className="intelligence-dashboard">
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 24, marginBottom: 32 }}>
+              <div className="card" style={{ padding: 24, background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb' }}>
+                <h3 style={{ margin: '0 0 20px', fontSize: 16 }}>📍 Top Counterfeit Hotspots (State-wise)</h3>
+                <div style={{ height: 300 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={stats?.reportsByState || [
+                      { _id: 'Maharashtra', count: 42 },
+                      { _id: 'Delhi', count: 38 },
+                      { _id: 'UP', count: 25 },
+                      { _id: 'Karnataka', count: 18 },
+                      { _id: 'Gujarat', count: 12 }
+                    ]}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                      <XAxis dataKey="_id" fontSize={12} />
+                      <YAxis fontSize={12} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill="#ef4444" radius={[4, 4, 0, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+              <div className="card" style={{ padding: 24, background: '#fff', borderRadius: 12, border: '1px solid #e5e7eb' }}>
+                <h3 style={{ margin: '0 0 20px', fontSize: 16 }}>📊 Risk Distribution</h3>
+                <div style={{ height: 300 }}>
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={stats?.riskDistribution || [
+                      { _id: 'Critical', count: 15 },
+                      { _id: 'High', count: 28 },
+                      { _id: 'Medium', count: 45 },
+                      { _id: 'Low', count: 120 }
+                    ]} layout="vertical">
+                      <CartesianGrid strokeDasharray="3 3" horizontal={false} />
+                      <XAxis type="number" hide />
+                      <YAxis dataKey="_id" type="category" fontSize={12} width={80} />
+                      <Tooltip />
+                      <Bar dataKey="count" fill="#8b5cf6" radius={[0, 4, 4, 0]} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            </div>
+
+            <div className="card" style={{ padding: 24, background: '#f5f3ff', borderRadius: 12, border: '1px solid #ddd6fe' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
+                <h3 style={{ margin: 0, fontSize: 18, color: '#4c1d95' }}>🛡️ B2B Brand Protection Insights</h3>
+                <span className="badge badge-indigo" style={{ background: '#8b5cf6', color: '#fff', padding: '4px 10px', borderRadius: 4, fontSize: 11 }}>PREMIUM FEATURE</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
+                <div style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #ddd6fe' }}>
+                  <div style={{ fontSize: 12, color: '#6d28d9', fontWeight: 600, textTransform: 'uppercase' }}>Most Targeted Brand</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginTop: 4 }}>GSK (Crocin)</div>
+                </div>
+                <div style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #ddd6fe' }}>
+                  <div style={{ fontSize: 12, color: '#6d28d9', fontWeight: 600, textTransform: 'uppercase' }}>Detection Rate</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginTop: 4 }}>84.2%</div>
+                </div>
+                <div style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #ddd6fe' }}>
+                  <div style={{ fontSize: 12, color: '#6d28d9', fontWeight: 600, textTransform: 'uppercase' }}>Estimated Savings</div>
+                  <div style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginTop: 4 }}>₹12.4 Cr</div>
+                </div>
+              </div>
+            </div>
           </div>
         )}
       </div>

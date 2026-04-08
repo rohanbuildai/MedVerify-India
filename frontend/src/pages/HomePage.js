@@ -1,16 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { FiSearch, FiAlertTriangle, FiShield, FiCheckCircle, FiArrowRight, FiAlertCircle } from 'react-icons/fi';
+import { FiSearch, FiAlertTriangle, FiShield, FiCheckCircle, FiArrowRight, FiAlertCircle, FiMaximize, FiBox } from 'react-icons/fi';
 import { api } from '../context/AuthContext';
 import './HomePage.css';
-
-const INDIA_STATES = [
-  'Andhra Pradesh','Arunachal Pradesh','Assam','Bihar','Chhattisgarh','Goa','Gujarat',
-  'Haryana','Himachal Pradesh','Jharkhand','Karnataka','Kerala','Madhya Pradesh',
-  'Maharashtra','Manipur','Meghalaya','Mizoram','Nagaland','Odisha','Punjab',
-  'Rajasthan','Sikkim','Tamil Nadu','Telangana','Tripura','Uttar Pradesh',
-  'Uttarakhand','West Bengal','Delhi','Jammu & Kashmir','Ladakh'
-];
 
 const SUSPICION_LABELS = {
   wrong_color: 'Wrong Color/Appearance',
@@ -73,42 +65,60 @@ const HomePage = () => {
         <div className="hero__bg-pattern" />
         <div className="container hero__content">
           <div className="hero__badge">
-            <FiShield size={13} /> Fighting Fake Medicines in India
+            <FiShield size={13} /> Official Verification Portal
           </div>
           <h1 className="hero__title">
-            Verify Your Medicine.<br />
-            <span className="hero__title-accent">Protect Your Life.</span>
+            Check Your Medicine Authenticity.<br />
+            <span className="hero__title-accent">Protect Your Health.</span>
           </h1>
           <p className="hero__subtitle">
-            Over 25% of medicines in India may be fake or substandard.
-            Search our database to verify authenticity, report suspicious drugs,
-            and help protect millions of Indians.
+            Verify <strong>strips, tablets, and syrups</strong> against our centralized clinical database. 
+            Real-world statistics show 1 in 4 medicines in India may be counterfeit.
           </p>
 
-          {/* Search bar */}
-          <form className="hero__search" onSubmit={handleSearch}>
-            <div className="hero__search-inner">
-              <FiSearch size={18} className="hero__search-icon" />
-              <input
-                type="text"
-                className="hero__search-input"
-                placeholder="Search by medicine name, brand, or generic name..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-              />
-              <button type="submit" className="btn btn-primary hero__search-btn">
-                Verify Now
+          {/* Verification Hub */}
+          <div className="verify-hub">
+            <div className="verify-hub__options">
+              <button onClick={() => navigate('/verify?action=scan')} className="verify-hub__btn">
+                <div className="verify-hub__btn-icon"><FiMaximize size={24} /></div>
+                <div className="verify-hub__btn-text">
+                  <strong>Scan QR Code</strong>
+                  <span>Instant verification</span>
+                </div>
+              </button>
+              <button onClick={() => navigate('/verify?action=ai')} className="verify-hub__btn verify-hub__btn--accent">
+                <div className="verify-hub__btn-icon"><FiBox size={24} /></div>
+                <div className="verify-hub__btn-text">
+                  <strong>AI Packaging Scan</strong>
+                  <span>Detect fake strips</span>
+                </div>
               </button>
             </div>
-          </form>
 
-          <div className="hero__cta-links">
-            <Link to="/report" className="hero__cta-link hero__cta-link--primary">
-              <FiAlertTriangle size={16} /> Report Fake Medicine
-            </Link>
-            <Link to="/reports/public" className="hero__cta-link">
-              View Community Reports <FiArrowRight size={14} />
-            </Link>
+            <form className="hero__search" onSubmit={handleSearch}>
+              <div className="hero__search-inner">
+                <FiSearch size={18} className="hero__search-icon" />
+                <input
+                  type="text"
+                  className="hero__search-input"
+                  placeholder="Or search by Brand or Generic name (e.g. Paracetamol)..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                <button type="submit" className="btn btn-primary hero__search-btn">
+                  Verify Now
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <div className="hero__trust-bar">
+            <span>Verified Sources:</span>
+            <div className="hero__trust-logos">
+              <span className="trust-logo">CDSCO Guidelines</span>
+              <span className="trust-logo">MOHFW Protocols</span>
+              <span className="trust-logo">WHO Standards</span>
+            </div>
           </div>
         </div>
       </section>
@@ -129,17 +139,19 @@ const HomePage = () => {
       <section className="how-section">
         <div className="container">
           <div className="section-header">
-            <h2>How MedVerify Works</h2>
-            <p>Simple steps to protect yourself and your family</p>
+            <div>
+              <h2>Verification Framework</h2>
+              <p>How we ensure your medicine is safe and authentic</p>
+            </div>
           </div>
           <div className="how-grid">
             {[
-              { step: '01', icon: <FiSearch size={28} />, title: 'Search Your Medicine', desc: 'Enter the medicine name, brand, or generic composition in our database.' },
-              { step: '02', icon: <FiShield size={28} />, title: 'Check Authenticity', desc: 'Compare physical features, packaging, and manufacturer details with our verified records.' },
-              { step: '03', icon: <FiAlertTriangle size={28} />, title: 'Report Suspicious', desc: 'Found something wrong? Report it. Your report helps flag fake drugs for everyone.' },
-              { step: '04', icon: <FiCheckCircle size={28} />, title: 'Authorities Alerted', desc: 'Our team reviews reports and refers verified cases to CDSCO for action.' },
+              { step: '01', icon: <FiSearch size={28} />, title: 'Real-time Lookup', desc: 'Queries the national database for manufacturer-authorized batch details.' },
+              { step: '02', icon: <FiShield size={28} />, title: 'Physical Validation', desc: 'Match hologram, color, and imprints against official high-res benchmarks.' },
+              { step: '03', icon: <FiAlertTriangle size={28} />, title: 'Risk Assessment', desc: 'AI analyzes subtle packaging inconsistencies common in counterfeits.' },
+              { step: '04', icon: <FiCheckCircle size={28} />, title: 'Government Alert', desc: 'Suspicious cases are automatically formatted for CDSCO vigilance review.' },
             ].map(item => (
-              <div key={item.step} className="how-card">
+              <div key={item.step} className="how-card card-clinical">
                 <div className="how-card__step">{item.step}</div>
                 <div className="how-card__icon">{item.icon}</div>
                 <h3 className="how-card__title">{item.title}</h3>
@@ -224,23 +236,23 @@ const HomePage = () => {
       {/* ── CTA Banner ──────────────────────────────────────────── */}
       <section className="cta-section">
         <div className="container">
-          <div className="cta-banner">
+          <div className="cta-banner card-clinical">
             <div className="cta-banner__left">
-              <h2>Join the Fight Against Fake Medicines</h2>
-              <p>Create a free account to report suspicious medicines, track your reports, and get community alerts.</p>
+              <h2>Official Vigilance Network</h2>
+              <p>Every report you file helps build a safer pharmaceutical environment in India. Your data is encrypted and handled per medical privacy standards.</p>
               <div className="cta-banner__actions">
-                <Link to="/register" className="btn btn-primary btn-lg">Register Free</Link>
-                <Link to="/verify" className="btn btn-outline btn-lg">Verify a Medicine</Link>
+                <Link to="/register" className="btn btn-primary btn-lg">Secure Registration</Link>
+                <Link to="/report" className="btn btn-outline btn-lg">File a Safety Report</Link>
               </div>
             </div>
             <div className="cta-banner__right">
               <div className="cta-stat">
-                <div className="cta-stat__number">25%</div>
-                <div className="cta-stat__label">Medicines in India may be fake</div>
+                <div className="cta-stat__number">Real-Time</div>
+                <div className="cta-stat__label">Clinical Alert System</div>
               </div>
               <div className="cta-stat">
-                <div className="cta-stat__number">1 in 5</div>
-                <div className="cta-stat__label">Strips in major cities are counterfeit</div>
+                <div className="cta-stat__number">Encrypted</div>
+                <div className="cta-stat__label">Data Protection Policy</div>
               </div>
             </div>
           </div>

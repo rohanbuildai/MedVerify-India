@@ -2,25 +2,18 @@
 
 /* ─── Design Tokens ────────────────────────────────────────────────── */
 :root {
-  --green-950: #052e16;
-  --green-900: #14532d;
-  --green-800: #166534;
-  --green-700: #15803d;
-  --green-600: #16a34a;
-  --green-500: #22c55e;
-  --green-400: #4ade80;
-  --green-100: #dcfce7;
-  --green-50:  #f0fdf4;
+  /* ─── Clinical Emerald Palette ───────────────────────────────── */
+  --green-950: #064e3b; /* Deep Clinical Emerald */
+  --green-900: #065f46;
+  --green-800: #047857;
+  --green-700: #059669;
+  --green-600: #10b981;
+  --green-500: #34d399;
+  --green-400: #6ee7b7;
+  --green-100: #d1fae5;
+  --green-50:  #f0fdf9;
 
-  --red-600:   #dc2626;
-  --red-500:   #ef4444;
-  --red-100:   #fee2e2;
-  --red-50:    #fef2f2;
-
-  --amber-500: #f59e0b;
-  --amber-100: #fef3c7;
-  --amber-50:  #fffbeb;
-
+  /* ─── High-Contrast Neutrals ─────────────────────────────────── */
   --slate-950: #020617;
   --slate-900: #0f172a;
   --slate-800: #1e293b;
@@ -34,21 +27,36 @@
   --slate-50:  #f8fafc;
   --white:     #ffffff;
 
+  /* ─── Trust & Risk Indicators ───────────────────────────────── */
+  --red-600:   #e11d48;
+  --red-500:   #f43f5e;
+  --red-100:   #ffe4e6;
+  --amber-600: #d97706;
+  --amber-500: #f59e0b;
+  --amber-100: #fef3c7;
+  --blue-600:  #2563eb;
+  --blue-500:  #3b82f6;
+  --blue-50:   #eff6ff;
+
+  /* ─── Typography & Spacing ─────────────────────────────────── */
   --font-display: 'Syne', sans-serif;
   --font-body:    'DM Sans', sans-serif;
 
-  --radius-sm: 6px;
-  --radius-md: 10px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 32px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
-  --shadow-md: 0 4px 12px rgba(0,0,0,.08), 0 2px 6px rgba(0,0,0,.05);
-  --shadow-lg: 0 12px 32px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
-  --shadow-xl: 0 24px 48px rgba(0,0,0,.12), 0 8px 20px rgba(0,0,0,.08);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --shadow-trust: 0 10px 40px -10px rgba(5, 150, 105, 0.15);
 
   --transition: 200ms cubic-bezier(.4,0,.2,1);
+  --glass: rgba(255, 255, 255, 0.8);
+  --glass-border: rgba(255, 255, 255, 0.2);
 }
 
 /* ─── Reset ────────────────────────────────────────────────────────── */
@@ -98,20 +106,42 @@ h3 { font-size: clamp(1.25rem, 2vw, 1.75rem); }
 .btn:disabled { opacity: .55; cursor: not-allowed; }
 .btn-primary {
   background: var(--green-700); color: var(--white);
-  box-shadow: 0 2px 8px rgba(21,128,61,.25);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.2);
 }
-.btn-primary:hover:not(:disabled) { background: var(--green-800); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(21,128,61,.35); }
-.btn-danger { background: var(--red-500); color: var(--white); }
-.btn-danger:hover:not(:disabled) { background: var(--red-600); }
+.btn-primary:hover:not(:disabled) { 
+  background: var(--green-800); 
+  transform: translateY(-2px); 
+  box-shadow: 0 6px 16px rgba(5, 150, 105, 0.3); 
+}
+.btn-danger { background: var(--red-500); color: var(--white); box-shadow: 0 2px 8px rgba(225, 29, 72, 0.2); }
+.btn-danger:hover:not(:disabled) { background: var(--red-600); transform: translateY(-2px); box-shadow: 0 6px 16px rgba(225, 29, 72, 0.3); }
 .btn-outline {
-  background: transparent; border: 1.5px solid var(--slate-300); color: var(--slate-700);
+  background: transparent; border: 1.5px solid var(--slate-200); color: var(--slate-700);
 }
-.btn-outline:hover:not(:disabled) { border-color: var(--green-600); color: var(--green-700); background: var(--green-50); }
+.btn-outline:hover:not(:disabled) { 
+  border-color: var(--green-600); 
+  color: var(--green-700); 
+  background: var(--green-50); 
+  transform: translateY(-1px);
+}
 .btn-ghost { background: transparent; color: var(--slate-600); }
 .btn-ghost:hover:not(:disabled) { background: var(--slate-100); color: var(--slate-800); }
-.btn-sm { padding: 7px 14px; font-size: 13px; }
-.btn-lg { padding: 14px 32px; font-size: 16px; border-radius: var(--radius-lg); }
+.btn-sm { padding: 6px 12px; font-size: 13px; }
+.btn-lg { padding: 16px 36px; font-size: 16px; border-radius: var(--radius-lg); letter-spacing: 0.01em; }
 .btn-block { width: 100%; }
+
+/* ─── Trust Elements ───────── */
+.trust-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 8px 16px; background: var(--white);
+  border: 1px solid var(--slate-200); border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm); font-size: 13px; font-weight: 600; color: var(--slate-700);
+}
+.card-clinical {
+  background: var(--white); border: 1px solid var(--slate-100);
+  box-shadow: var(--shadow-trust); transition: transform 0.3s ease;
+}
+.card-clinical:hover { transform: translateY(-4px); }
 
 /* ─── Form Elements ─────────────────────────────────────────────────── */
 .form-group { display: flex; flex-direction: column; gap: 6px; }

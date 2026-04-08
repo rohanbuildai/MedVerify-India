@@ -15,30 +15,39 @@ const FlaggedPage = () => {
   const [medicines, setMedicines] = useState([]);
   const [loading, setLoading] = useState(true);
   const [stats, setStats] = useState(null);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [total, setTotal] = useState(0);
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true);
       try {
         const [flagRes, statsRes] = await Promise.all([
-          api.get('/medicines/flagged'),
-          api.get('/medicines/stats')
+          api.get(`/medicines/flagged?page=${page}&limit=12`),
+          api.get(`/medicines/stats`)
         ]);
         setMedicines(flagRes.data.data || []);
+        setTotalPages(flagRes.data.pages || 1);
+        setTotal(flagRes.data.total || flagRes.data.data?.length || 0);
         setStats(statsRes.data.data);
       } catch {}
       setLoading(false);
     };
     load();
-  }, []);
+  }, [page]);
 
   const maxReports = medicines.length > 0 ? Math.max(...medicines.map(m => m.reportCount || 0)) : 1;
 
   return (
     <div className="page-enter">
-      <div className="public-page__header" style={{ background: 'linear-gradient(135deg, #7f1d1d, #b91c1c)' }}>
+      <div className="public-page__header" style={{ background: 'radial-gradient(circle at 0% 0%, #450a0a 0%, #7f1d1d 100%)' }}>
         <div className="container">
-          <h1><FiAlertCircle size={26} /> Flagged & High-Risk Medicines</h1>
-          <p>Medicines with multiple community reports of counterfeiting or suspicious quality. Exercise extreme caution.</p>
+          <div className="hero__badge" style={{ background: 'rgba(255,255,255,0.05)', color: 'var(--red-400)' }}>
+            <FiShield size={13} /> Official Safety Alert
+          </div>
+          <h1>Public Health Warnings</h1>
+          <p>Verified pharmaceutical products with confirmed clinical risks or counterfeiting reports. These items are strictly under investigative review by CDSCO oversight.</p>
         </div>
       </div>
 
@@ -53,15 +62,15 @@ const FlaggedPage = () => {
 
         {/* Stats row */}
         {stats && (
-          <div style={{ display: 'flex', gap: 16, marginBottom: 28, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 20, marginBottom: 32, flexWrap: 'wrap' }}>
             {[
-              { label: 'Total Medicines in DB', val: stats.total, color: '#3b82f6' },
-              { label: 'Flagged as Fake', val: stats.flagged, color: '#ef4444' },
-              { label: 'High/Critical Risk', val: stats.highRisk, color: '#f97316' },
+              { label: 'Clinical Database', val: stats.total, color: 'var(--slate-400)' },
+              { label: 'Confirmed Risk', val: stats.flagged, color: 'var(--red-500)' },
+              { label: 'Critical Alert', val: stats.highRisk, color: 'var(--red-600)' },
             ].map((s, i) => (
-              <div key={i} style={{ background: 'white', border: '1px solid var(--slate-200)', borderRadius: 12, padding: '16px 24px', display: 'flex', gap: 12, alignItems: 'center', flex: '1', minWidth: 160 }}>
-                <div style={{ fontFamily: 'var(--font-display)', fontSize: 28, fontWeight: 800, color: s.color }}>{s.val}</div>
-                <div style={{ fontSize: 13, color: 'var(--slate-500)', fontWeight: 600 }}>{s.label}</div>
+              <div key={i} className="dash-stat card-clinical">
+                <div style={{ fontFamily: 'var(--font-display)', fontSize: 32, fontWeight: 800, color: s.color, lineHeight: 1 }}>{s.val}</div>
+                <div style={{ fontSize: 11, color: 'var(--slate-400)', fontWeight: 700, textTransform: 'uppercase', letterspacing: '0.05em' }}>{s.label}</div>
               </div>
             ))}
           </div>
@@ -84,7 +93,7 @@ const FlaggedPage = () => {
             </div>
             <div className="flagged-list">
               {medicines.map(med => (
-                <div key={med._id} className="flagged-detail-card">
+                <div key={med._id} className="flagged-detail-card card-clinical">
                   <div className="flagged-detail-card__risk" style={{ color: RISK_COLOR[med.riskLevel] || '#ef4444' }}>
                     ⚠ {med.riskLevel?.toUpperCase()} RISK
                   </div>
@@ -116,6 +125,36 @@ const FlaggedPage = () => {
                 </div>
               ))}
             </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="pagination" style={{ marginTop: 40, display: 'flex', gap: 8, justifyContent: 'center' }}>
+                <button 
+                  className="btn btn-outline btn-sm" 
+                  onClick={() => setPage(p => Math.max(1, p - 1))} 
+                  disabled={page === 1 || loading}
+                >
+                  ← Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map(pg => (
+                  <button
+                    key={pg}
+                    className={`btn btn-sm ${pg === page ? 'btn-primary' : 'btn-outline'}`}
+                    onClick={() => setPage(pg)}
+                    disabled={loading}
+                  >
+                    {pg}
+                  </button>
+                ))}
+                <button 
+                  className="btn btn-outline btn-sm" 
+                  onClick={() => setPage(p => Math.min(totalPages, p + 1))} 
+                  disabled={page === totalPages || loading}
+                >
+                  Next →
+                </button>
+              </div>
+            )}
           </>
         )}
 

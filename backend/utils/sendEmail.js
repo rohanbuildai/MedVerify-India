@@ -2,8 +2,8 @@ const nodemailer = require('nodemailer');
 
 const sendEmail = async ({ email, subject, html, text }) => {
   // In development, log to console if email credentials not set
-  if (!process.env.EMAIL_USER || process.env.EMAIL_USER === 'rohan.buildai@gmail.com') {
-    console.log(`📧 Email (dev mode):\nTo: ${email}\nSubject: ${subject}\n`);
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.log(`📧 Email (dev mode - credentials missing):\nTo: ${email}\nSubject: ${subject}\n`);
     return;
   }
 

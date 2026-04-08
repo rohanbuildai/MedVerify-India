@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
-import { FiShield, FiSearch, FiAlertTriangle, FiMenu, FiX, FiUser, FiLogOut, FiGrid, FiChevronDown } from 'react-icons/fi';
+import { FiShield, FiSearch, FiAlertTriangle, FiMenu, FiX, FiUser, FiLogOut, FiGrid, FiChevronDown, FiMapPin } from 'react-icons/fi';
 import './Navbar.css';
 
 const Navbar = () => {
@@ -65,6 +65,11 @@ const Navbar = () => {
           <li>
             <Link to="/flagged" className={`navbar__link ${isActive('/flagged') ? 'navbar__link--active' : ''}`}>
               Flagged Drugs
+            </Link>
+          </li>
+          <li>
+            <Link to="/pharmacies" className={`navbar__link ${isActive('/pharmacies') ? 'navbar__link--active' : ''}`}>
+              <FiMapPin size={15} /> Pharmacies
             </Link>
           </li>
         </ul>
@@ -132,6 +137,7 @@ const Navbar = () => {
           <Link to="/verify" className="navbar__mobile-link"><FiSearch size={16} /> Verify Medicine</Link>
           <Link to="/reports/public" className="navbar__mobile-link"><FiAlertTriangle size={16} /> Reports Feed</Link>
           <Link to="/flagged" className="navbar__mobile-link">Flagged Drugs</Link>
+          <Link to="/pharmacies" className="navbar__mobile-link"><FiMapPin size={16} /> Pharmacies</Link>
           {user ? (
             <>
               <Link to="/report" className="navbar__mobile-link navbar__mobile-link--primary">Report Fake Medicine</Link>

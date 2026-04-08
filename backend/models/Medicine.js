@@ -110,6 +110,12 @@ const medicineSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
   },
+  recallStatus: {
+    type: String,
+    enum: ['none', 'active', 'recalled'],
+    default: 'none'
+  },
+  recallNotice: String,
   isVerified: {
     type: Boolean,
     default: false

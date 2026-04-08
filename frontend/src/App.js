@@ -14,7 +14,8 @@ const PublicReportsPage = lazy(() => import('./pages/PublicReportsPage'));
 const FlaggedPage = lazy(() => import('./pages/FlaggedPage'));
 const DashboardPage = lazy(() => import('./pages/DashboardPage'));
 const AdminPage = lazy(() => import('./pages/AdminPage'));
-const { LoginPage, RegisterPage } = require('./pages/AuthPages');
+const PharmacyLocator = lazy(() => import('./pages/PharmacyLocator'));
+const { LoginPage, RegisterPage, ForgotPasswordPage, ResetPasswordPage, VerifyEmailPage } = require('./pages/AuthPages');
 
 // Loading fallback
 const PageLoader = () => (
@@ -62,6 +63,7 @@ function App() {
                 <Route path="/verify/:id" element={<VerifyPage />} />
                 <Route path="/reports/public" element={<PublicReportsPage />} />
                 <Route path="/flagged" element={<FlaggedPage />} />
+                <Route path="/pharmacies" element={<PharmacyLocator />} />
 
                 {/* Auth Routes (redirect if logged in) */}
                 <Route path="/login" element={
@@ -69,6 +71,15 @@ function App() {
                 } />
                 <Route path="/register" element={
                   <PublicOnlyRoute><RegisterPage /></PublicOnlyRoute>
+                } />
+                <Route path="/forgot-password" element={
+                  <PublicOnlyRoute><ForgotPasswordPage /></PublicOnlyRoute>
+                } />
+                <Route path="/reset-password/:token" element={
+                  <PublicOnlyRoute><ResetPasswordPage /></PublicOnlyRoute>
+                } />
+                <Route path="/verify-email/:token" element={
+                  <VerifyEmailPage />
                 } />
 
                 {/* Protected Routes */}

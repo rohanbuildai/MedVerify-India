@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { FiAlertTriangle, FiMapPin, FiCalendar, FiUser, FiThumbsUp, FiFilter } from 'react-icons/fi';
+import { FiAlertTriangle, FiMapPin, FiCalendar, FiUser, FiThumbsUp, FiFilter, FiShield } from 'react-icons/fi';
 import { api } from '../context/AuthContext';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
@@ -68,8 +68,11 @@ const PublicReportsPage = () => {
     <div className="page-enter">
       <div className="public-page__header">
         <div className="container">
-          <h1><FiAlertTriangle size={26} /> Community Reports Feed</h1>
-          <p>Real-time reports of suspicious medicines from across India — submitted by citizens, pharmacists and healthcare workers</p>
+          <div className="hero__badge">
+            <FiShield size={13} /> Community Health Surveillance
+          </div>
+          <h1>Public Incident Feed</h1>
+          <p>Real-time clinical vigilance data submitted by citizens and verified by our auditing team. Help maintain safety by upvoting suspected counterfeits.</p>
         </div>
       </div>
 
@@ -108,7 +111,7 @@ const PublicReportsPage = () => {
         ) : (
           <div className="reports-feed">
             {reports.map(report => (
-              <div key={report._id} className="report-feed-card">
+              <div key={report._id} className="report-feed-card card-clinical">
                 <div className="report-feed-card__header">
                   <div>
                     <div className="report-feed-card__name">

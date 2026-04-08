@@ -180,15 +180,29 @@ exports.updateMedicine = async (req, res, next) => {
 // @access  Public
 exports.getFlaggedMedicines = async (req, res, next) => {
   try {
-    const medicines = await Medicine.find({
+    const { page = 1, limit = 12 } = req.query;
+    const skip = (parseInt(page) - 1) * parseInt(limit);
+
+    const filter = {
       $or: [{ isFlaggedAsFake: true }, { riskLevel: { $in: ['high', 'critical'] } }],
       isActive: true
-    })
-    .select('name brand manufacturer category riskLevel reportCount medicineId')
-    .sort({ reportCount: -1 })
-    .limit(50);
+    };
 
-    res.status(200).json({ success: true, count: medicines.length, data: medicines });
+    const total = await Medicine.countDocuments(filter);
+    const medicines = await Medicine.find(filter)
+      .select('name brand manufacturer category riskLevel reportCount medicineId')
+      .sort({ reportCount: -1 })
+      .skip(skip)
+      .limit(parseInt(limit));
+
+    res.status(200).json({ 
+      success: true, 
+      count: medicines.length, 
+      total,
+      pages: Math.ceil(total / parseInt(limit)),
+      currentPage: parseInt(page),
+      data: medicines 
+    });
   } catch (err) {
     next(err);
   }

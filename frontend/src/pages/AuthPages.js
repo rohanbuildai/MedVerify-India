@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { FiShield, FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiPhone } from 'react-icons/fi';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { FiShield, FiMail, FiLock, FiEye, FiEyeOff, FiUser, FiPhone, FiAlertTriangle } from 'react-icons/fi';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
 import './AuthPages.css';
@@ -24,7 +24,7 @@ export const LoginPage = () => {
     if (!form.email || !form.password) { toast.error('Please fill all fields'); return; }
     setLoading(true);
     try {
-      await login(form.email, form.password);
+      await login(form.email.trim(), form.password);
       toast.success('Welcome back!');
       navigate('/dashboard');
     } catch (err) {
@@ -112,7 +112,8 @@ export const RegisterPage = () => {
     if (!validate()) return;
     setLoading(true);
     try {
-      await register(form);
+      const sanitizedForm = { ...form, email: form.email.trim() };
+      await register(sanitizedForm);
       toast.success('Account created! Welcome to MedVerify.');
       navigate('/dashboard');
     } catch (err) {
@@ -205,6 +206,206 @@ export const RegisterPage = () => {
         <div className="auth-card__footer">
           Already have an account? <Link to="/login">Login</Link>
         </div>
+      </div>
+    </div>
+  );
+};
+
+export const ForgotPasswordPage = () => {
+  const { forgotPassword } = useAuth();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sent, setSent] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!email) { toast.error('Please enter your email'); return; }
+    setLoading(true);
+    try {
+      await forgotPassword(email.trim());
+      setSent(true);
+      toast.success('Reset link sent to your email');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to send reset link');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-page page-enter">
+      <div className="auth-card">
+        <div className="auth-card__logo">
+          <div className="auth-logo-icon"><FiShield size={24} /></div>
+          <span className="auth-logo-text">MedVerify India</span>
+        </div>
+        <h2 className="auth-card__title">Reset Password</h2>
+        <p className="auth-card__sub">Enter your email to receive a password recovery link</p>
+
+        {sent ? (
+          <div className="auth-success-state" style={{ textAlign: 'center', padding: '20px 0' }}>
+            <div className="auth-success-icon" style={{ color: 'var(--green-600)', marginBottom: 20 }}><FiMail size={48} /></div>
+            <p>We've sent a password reset link to <strong>{email}</strong>. Please check your inbox.</p>
+            <Link to="/login" className="btn btn-outline btn-block" style={{ marginTop: 24 }}>Back to Login</Link>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="auth-form">
+            <div className="form-group">
+              <label className="form-label">Email Address</label>
+              <div className="input-icon-wrap">
+                <FiMail size={16} className="input-icon" />
+                <input 
+                  type="email" 
+                  className="form-input input-with-icon" 
+                  value={email} 
+                  onChange={e => setEmail(e.target.value)} 
+                  placeholder="you@example.com" 
+                />
+              </div>
+            </div>
+            <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
+              {loading ? <><span className="spinner" /> Sending...</> : 'Send Reset Link'}
+            </button>
+            <div className="auth-card__footer">
+              <Link to="/login">Back to Login</Link>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const ResetPasswordPage = () => {
+  const { resetPassword } = useAuth();
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (password.length < 8) { toast.error('Password must be at least 8 characters'); return; }
+    if (password !== confirmPassword) { toast.error('Passwords do not match'); return; }
+    
+    setLoading(true);
+    try {
+      await resetPassword(token, password);
+      toast.success('Password reset successful! You can now login.');
+      navigate('/login');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to reset password');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="auth-page page-enter">
+      <div className="auth-card">
+        <div className="auth-card__logo">
+          <div className="auth-logo-icon"><FiShield size={24} /></div>
+          <span className="auth-logo-text">MedVerify India</span>
+        </div>
+        <h2 className="auth-card__title">Set New Password</h2>
+        <p className="auth-card__sub">Your account security is our priority</p>
+
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label className="form-label">New Password</label>
+            <div className="input-icon-wrap">
+              <FiLock size={16} className="input-icon" />
+              <input 
+                type={showPass ? 'text' : 'password'} 
+                className="form-input input-with-icon input-with-right" 
+                value={password} 
+                onChange={e => setPassword(e.target.value)} 
+                placeholder="Minimum 8 characters" 
+              />
+              <button type="button" className="input-eye" onClick={() => setShowPass(!showPass)}>
+                {showPass ? <FiEyeOff size={16} /> : <FiEye size={16} />}
+              </button>
+            </div>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Confirm New Password</label>
+            <div className="input-icon-wrap">
+              <FiLock size={16} className="input-icon" />
+              <input 
+                type="password" 
+                className="form-input input-with-icon" 
+                value={confirmPassword} 
+                onChange={e => setConfirmPassword(e.target.value)} 
+                placeholder="Repeat new password" 
+              />
+            </div>
+          </div>
+          <button type="submit" className="btn btn-primary btn-block btn-lg" disabled={loading}>
+            {loading ? <><span className="spinner" /> Resetting...</> : 'Update Password'}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export const VerifyEmailPage = () => {
+  const { verifyEmail } = useAuth();
+  const { token } = useParams();
+  const navigate = useNavigate();
+  const [status, setStatus] = useState('verifying'); // verifying, success, error
+
+  useEffect(() => {
+    const doVerify = async () => {
+      try {
+        await verifyEmail(token);
+        setStatus('success');
+      } catch (err) {
+        setStatus('error');
+      }
+    };
+    if (token) doVerify();
+  }, [token, verifyEmail]);
+
+  return (
+    <div className="auth-page page-enter">
+      <div className="auth-card" style={{ textAlign: 'center' }}>
+        <div className="auth-card__logo" style={{ justifyContent: 'center' }}>
+          <div className="auth-logo-icon"><FiShield size={24} /></div>
+          <span className="auth-logo-text">MedVerify India</span>
+        </div>
+        
+        {status === 'verifying' && (
+          <div className="auth-status-state" style={{ padding: '20px 0' }}>
+            <div className="spinner spinner-lg spinner-dark" style={{ margin: '0 auto 20px' }} />
+            <h2 className="auth-card__title">Verifying Email</h2>
+            <p className="auth-card__sub">Please wait while we validate your activation link...</p>
+          </div>
+        )}
+
+        {status === 'success' && (
+          <div className="auth-status-state" style={{ padding: '20px 0' }}>
+            <div className="auth-success-icon" style={{ color: 'var(--green-600)', background: 'var(--green-50)', width: 64, height: 64, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <FiShield size={32} />
+            </div>
+            <h2 className="auth-card__title">Email Verified!</h2>
+            <p className="auth-card__sub">Your account is now fully activated. Thank you for joining the network.</p>
+            <Link to="/login" className="btn btn-primary btn-block btn-lg" style={{ marginTop: 24 }}>Continue to Login</Link>
+          </div>
+        )}
+
+        {status === 'error' && (
+          <div className="auth-status-state" style={{ padding: '20px 0' }}>
+            <div className="auth-error-icon" style={{ color: 'var(--red-600)', background: 'var(--red-50)', width: 64, height: 64, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', margin: '0 auto 20px' }}>
+              <FiAlertTriangle size={32} />
+            </div>
+            <h2 className="auth-card__title">Verification Failed</h2>
+            <p className="auth-card__sub">The link may be expired or invalid. Please request a new verification link from your dashboard.</p>
+            <Link to="/login" className="btn btn-outline btn-block" style={{ marginTop: 24 }}>Back to Login</Link>
+          </div>
+        )}
       </div>
     </div>
   );

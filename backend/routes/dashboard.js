@@ -26,7 +26,8 @@ router.get('/stats', protect, authorize('admin'), async (req, res, next) => {
       recentSignups,
       totalVerifications,
       reportsByDay,
-      topStates
+      reportsByState,
+      riskDistribution
     ] = await Promise.all([
       User.countDocuments(),
       Medicine.countDocuments({ isActive: true }),
@@ -50,7 +51,11 @@ router.get('/stats', protect, authorize('admin'), async (req, res, next) => {
       Report.aggregate([
         { $group: { _id: '$purchaseLocation.state', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
-        { $limit: 5 }
+        { $limit: 10 }
+      ]),
+      Medicine.aggregate([
+        { $group: { _id: '$riskLevel', count: { $sum: 1 } } },
+        { $sort: { count: -1 } }
       ])
     ]);
 
@@ -67,7 +72,8 @@ router.get('/stats', protect, authorize('admin'), async (req, res, next) => {
         recentSignups,
         totalVerifications,
         reportsByDay,
-        topStates
+        reportsByState,
+        riskDistribution
       }
     });
   } catch (err) {

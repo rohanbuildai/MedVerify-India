@@ -97,10 +97,26 @@ export const AuthProvider = ({ children }) => {
     dispatch({ type: 'LOGOUT' });
   };
 
+  const forgotPassword = async (email) => {
+    return await api.post('/auth/forgot-password', { email });
+  };
+
+  const resetPassword = async (token, password) => {
+    return await api.post(`/auth/reset-password/${token}`, { password });
+  };
+
+  const verifyEmail = async (token) => {
+    return await api.get(`/auth/verify-email/${token}`);
+  };
+
   const clearError = () => dispatch({ type: 'CLEAR_ERROR' });
 
   return (
-    <AuthContext.Provider value={{ ...state, register, login, logout, clearError, dispatch }}>
+    <AuthContext.Provider value={{ 
+      ...state, register, login, logout, 
+      forgotPassword, resetPassword, verifyEmail,
+      clearError, dispatch 
+    }}>
       {children}
     </AuthContext.Provider>
   );
