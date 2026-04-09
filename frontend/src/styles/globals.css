@@ -28,15 +28,20 @@
   --white:     #ffffff;
 
   /* Trust & Risk Indicators */
+  --red-700:   #b91c1c;
   --red-600:   #e11d48;
   --red-500:   #f43f5e;
+  --red-400:   #fb7185;
   --red-100:   #ffe4e6;
+  --red-50:    #fff1f2;
   --amber-600: #d97706;
   --amber-500: #f59e0b;
   --amber-100: #fef3c7;
+  --amber-50:  #fffbeb;
   --blue-600:  #2563eb;
   --blue-500:  #3b82f6;
   --blue-50:   #eff6ff;
+  --green-200: #bbf7d0;
 
   /* Typography & Spacing */
   --font-display: 'Syne', sans-serif;
