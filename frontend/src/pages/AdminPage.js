@@ -516,13 +516,7 @@ const AdminPage = () => {
                 <h3 style={{ margin: '0 0 20px', fontSize: 16 }}>📍 Top Counterfeit Hotspots (State-wise)</h3>
                 <div style={{ height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={stats?.reportsByState || [
-                      { _id: 'Maharashtra', count: 42 },
-                      { _id: 'Delhi', count: 38 },
-                      { _id: 'UP', count: 25 },
-                      { _id: 'Karnataka', count: 18 },
-                      { _id: 'Gujarat', count: 12 }
-                    ]}>
+                    <BarChart data={stats?.reportsByState || []}>
                       <CartesianGrid strokeDasharray="3 3" vertical={false} />
                       <XAxis dataKey="_id" fontSize={12} />
                       <YAxis fontSize={12} />
@@ -536,12 +530,7 @@ const AdminPage = () => {
                 <h3 style={{ margin: '0 0 20px', fontSize: 16 }}>📊 Risk Distribution</h3>
                 <div style={{ height: 300 }}>
                   <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={stats?.riskDistribution || [
-                      { _id: 'Critical', count: 15 },
-                      { _id: 'High', count: 28 },
-                      { _id: 'Medium', count: 45 },
-                      { _id: 'Low', count: 120 }
-                    ]} layout="vertical">
+                    <BarChart data={stats?.riskDistribution || []} layout="vertical">
                       <CartesianGrid strokeDasharray="3 3" horizontal={false} />
                       <XAxis type="number" hide />
                       <YAxis dataKey="_id" type="category" fontSize={12} width={80} />
@@ -553,26 +542,7 @@ const AdminPage = () => {
               </div>
             </div>
 
-            <div className="card" style={{ padding: 24, background: '#f5f3ff', borderRadius: 12, border: '1px solid #ddd6fe' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20 }}>
-                <h3 style={{ margin: 0, fontSize: 18, color: '#4c1d95' }}>🛡️ B2B Brand Protection Insights</h3>
-                <span className="badge badge-indigo" style={{ background: '#8b5cf6', color: '#fff', padding: '4px 10px', borderRadius: 4, fontSize: 11 }}>PREMIUM FEATURE</span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
-                <div style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #ddd6fe' }}>
-                  <div style={{ fontSize: 12, color: '#6d28d9', fontWeight: 600, textTransform: 'uppercase' }}>Most Targeted Brand</div>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginTop: 4 }}>GSK (Crocin)</div>
-                </div>
-                <div style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #ddd6fe' }}>
-                  <div style={{ fontSize: 12, color: '#6d28d9', fontWeight: 600, textTransform: 'uppercase' }}>Detection Rate</div>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginTop: 4 }}>84.2%</div>
-                </div>
-                <div style={{ background: '#fff', padding: 16, borderRadius: 8, border: '1px solid #ddd6fe' }}>
-                  <div style={{ fontSize: 12, color: '#6d28d9', fontWeight: 600, textTransform: 'uppercase' }}>Estimated Savings</div>
-                  <div style={{ fontSize: 24, fontWeight: 800, color: '#1e1b4b', marginTop: 4 }}>₹12.4 Cr</div>
-                </div>
-              </div>
-            </div>
+
           </div>
         )}
       </div>

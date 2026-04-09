@@ -145,7 +145,7 @@ const VerifyPage = () => {
       <div className="verify-page__header">
         <div className="container">
           <div className="hero__badge">
-            <FiShield size={13} /> Active Clinical Vigilance
+            <FiShield size={13} /> Medicine Verification
           </div>
           <h1>Verify Product Content</h1>
           <p>Utilize QR scanning, AI packaging analysis, or manual lookup to authenticate pharmaceutical products.</p>

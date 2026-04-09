@@ -43,7 +43,7 @@ const DashboardPage = () => {
                 <FiShield size={13} /> Secure Citizen Account
               </div>
               <h1>My Health Vigilance</h1>
-              <p>Welcome back, <strong>{user?.name}</strong> • Account Status: <span className="badge badge-green">Verified</span></p>
+              <p>Welcome back, <strong>{user?.name}</strong></p>
             </div>
             <Link to="/report" className="btn btn-danger btn-lg">
               <FiAlertTriangle size={15} /> Report Fake Medicine

@@ -9,13 +9,8 @@ import './PharmacyLocator.css';
 
 const containerStyle = { width: '100%', height: 'calc(100vh - 200px)', borderRadius: '12px' };
 
-// Sample verified pharmacies in India (Mock data)
-const MOCK_PHARMACIES = [
-  { id: 1, name: 'Apollo Pharmacy', lat: 28.6139, lng: 77.2090, address: 'Connaught Place, New Delhi', phone: '011-4152xxxx', verified: true, openNow: true },
-  { id: 2, name: 'MedPlus Pharmacy', lat: 19.0760, lng: 72.8777, address: 'Andheri West, Mumbai', phone: '022-2670xxxx', verified: true, openNow: true },
-  { id: 3, name: 'Netmeds Store', lat: 13.0827, lng: 80.2707, address: 'T. Nagar, Chennai', phone: '044-2434xxxx', verified: true, openNow: false },
-  { id: 4, name: 'Wellness Forever', lat: 18.5204, lng: 73.8567, address: 'Shivaji Nagar, Pune', phone: '020-2553xxxx', verified: true, openNow: true },
-];
+
+
 
 // Component to capture the map instance and provide it to the parent
 const MapController = ({ setMap }) => {

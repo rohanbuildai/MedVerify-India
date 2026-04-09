@@ -47,7 +47,7 @@ const FlaggedPage = () => {
             <FiShield size={13} /> Official Safety Alert
           </div>
           <h1>Public Health Warnings</h1>
-          <p>Verified pharmaceutical products with confirmed clinical risks or counterfeiting reports. These items are strictly under investigative review by CDSCO oversight.</p>
+          <p>Medicines flagged by the community based on multiple user reports. If you suspect a counterfeit medicine, consult your pharmacist or doctor.</p>
         </div>
       </div>
 

@@ -65,15 +65,15 @@ const HomePage = () => {
         <div className="hero__bg-pattern" />
         <div className="container hero__content">
           <div className="hero__badge">
-            <FiShield size={13} /> Official Verification Portal
+            <FiShield size={13} /> Verification Portal
           </div>
           <h1 className="hero__title">
             Check Your Medicine Authenticity.<br />
             <span className="hero__title-accent">Protect Your Health.</span>
           </h1>
           <p className="hero__subtitle">
-            Verify <strong>strips, tablets, and syrups</strong> against our centralized clinical database. 
-            Real-world statistics show 1 in 4 medicines in India may be counterfeit.
+            Verify <strong>strips, tablets, and syrups</strong> against our community-driven database. 
+            Help identify and report suspicious medicines in India.
           </p>
 
           {/* Verification Hub */}
@@ -113,11 +113,11 @@ const HomePage = () => {
           </div>
 
           <div className="hero__trust-bar">
-            <span>Verified Sources:</span>
+            <span>Platform Features:</span>
             <div className="hero__trust-logos">
-              <span className="trust-logo">CDSCO Guidelines</span>
-              <span className="trust-logo">MOHFW Protocols</span>
-              <span className="trust-logo">WHO Standards</span>
+              <span className="trust-logo">Community Reports</span>
+              <span className="trust-logo">AI Packaging Scan</span>
+              <span className="trust-logo">QR Verification</span>
             </div>
           </div>
         </div>
@@ -146,10 +146,10 @@ const HomePage = () => {
           </div>
           <div className="how-grid">
             {[
-              { step: '01', icon: <FiSearch size={28} />, title: 'Real-time Lookup', desc: 'Queries the national database for manufacturer-authorized batch details.' },
-              { step: '02', icon: <FiShield size={28} />, title: 'Physical Validation', desc: 'Match hologram, color, and imprints against official high-res benchmarks.' },
-              { step: '03', icon: <FiAlertTriangle size={28} />, title: 'Risk Assessment', desc: 'AI analyzes subtle packaging inconsistencies common in counterfeits.' },
-              { step: '04', icon: <FiCheckCircle size={28} />, title: 'Government Alert', desc: 'Suspicious cases are automatically formatted for CDSCO vigilance review.' },
+              { step: '01', icon: <FiSearch size={28} />, title: 'Search & Lookup', desc: 'Search our database for medicine details including brand, batch, and manufacturer info.' },
+              { step: '02', icon: <FiShield size={28} />, title: 'Visual Comparison', desc: 'Compare packaging details like hologram, color, and imprints against known product info.' },
+              { step: '03', icon: <FiAlertTriangle size={28} />, title: 'AI Packaging Scan', desc: 'Upload a photo and let AI analyze packaging for potential inconsistencies.' },
+              { step: '04', icon: <FiCheckCircle size={28} />, title: 'Community Report', desc: 'Report suspicious medicines to alert the community and help build a safer database.' },
             ].map(item => (
               <div key={item.step} className="how-card card-clinical">
                 <div className="how-card__step">{item.step}</div>
@@ -238,21 +238,21 @@ const HomePage = () => {
         <div className="container">
           <div className="cta-banner card-clinical">
             <div className="cta-banner__left">
-              <h2>Official Vigilance Network</h2>
-              <p>Every report you file helps build a safer pharmaceutical environment in India. Your data is encrypted and handled per medical privacy standards.</p>
+              <h2>Join the Community</h2>
+              <p>Every report you file helps build a safer pharmaceutical environment in India. Together, we can identify and flag suspicious medicines.</p>
               <div className="cta-banner__actions">
-                <Link to="/register" className="btn btn-primary btn-lg">Secure Registration</Link>
-                <Link to="/report" className="btn btn-outline btn-lg">File a Safety Report</Link>
+                <Link to="/register" className="btn btn-primary btn-lg">Create Account</Link>
+                <Link to="/report" className="btn btn-outline btn-lg">File a Report</Link>
               </div>
             </div>
             <div className="cta-banner__right">
               <div className="cta-stat">
-                <div className="cta-stat__number">Real-Time</div>
-                <div className="cta-stat__label">Clinical Alert System</div>
+                <div className="cta-stat__number">Open</div>
+                <div className="cta-stat__label">Community Platform</div>
               </div>
               <div className="cta-stat">
-                <div className="cta-stat__number">Encrypted</div>
-                <div className="cta-stat__label">Data Protection Policy</div>
+                <div className="cta-stat__number">Free</div>
+                <div className="cta-stat__label">Medicine Verification</div>
               </div>
             </div>
           </div>
@@ -281,7 +281,7 @@ const HomePage = () => {
         </div>
         <div className="footer__bottom">
           <div className="container">
-            <p>© 2024 MedVerify India. Helping protect Indian lives from counterfeit medicines.</p>
+            <p>© 2026 MedVerify India. A community platform to help identify suspicious medicines.</p>
             <p>In case of medical emergency, call <strong>112</strong></p>
           </div>
         </div>
